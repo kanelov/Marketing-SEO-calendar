@@ -215,6 +215,218 @@
       margin-bottom: 20px;
     }
 
+    .planning-panel {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .planning-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .planning-head h3 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .planning-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .planning-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: var(--brand);
+      background: var(--brand-soft);
+      border: 1px solid #cbd7ff;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .planning-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .planning-box {
+      display: grid;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 16px;
+    }
+
+    .planning-box h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .upcoming-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+    }
+
+    .upcoming-item {
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--card-muted, #dfe5ef);
+      border-left: 4px solid var(--card-accent, var(--brand));
+      background: var(--card-soft, #f8faff);
+      text-align: left;
+      color: #253149;
+    }
+
+    .upcoming-item strong {
+      overflow-wrap: anywhere;
+    }
+
+    .upcoming-meta {
+      color: #556176;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .theme-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .theme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #263553;
+      background: #f6f8fc;
+      border: 1px solid #d9e1ef;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .theme-chip:hover {
+      background: var(--brand-soft);
+      border-color: #b9c8ff;
+    }
+
+    .theme-chip.calendar-chip {
+      color: #fff;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .theme-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border-radius: 999px;
+      color: #536079;
+      background: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .theme-add-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .year-calendar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .month-bucket {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      min-height: 132px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .month-bucket.current {
+      border-color: #9bb0ff;
+      box-shadow: 0 0 0 3px rgba(49, 87, 213, .09);
+    }
+
+    .month-bucket h4 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin: 0;
+      color: #263553;
+      font-size: 14px;
+    }
+
+    .month-count {
+      color: var(--muted);
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .month-campaigns {
+      display: grid;
+      gap: 6px;
+    }
+
+    .month-campaign {
+      padding: 7px 8px;
+      border-radius: 6px;
+      color: #263553;
+      background: #f6f8fc;
+      border: 1px solid #e3e8f1;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .month-campaign:hover {
+      background: var(--brand-soft);
+      border-color: #b9c8ff;
+    }
+
+    .month-more {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
     .jump-nav {
       position: sticky;
       top: 0;
@@ -764,6 +976,37 @@
       white-space: pre-wrap;
     }
 
+    .backup-list {
+      display: grid;
+      gap: 10px;
+      max-height: min(520px, 62vh);
+      overflow: auto;
+    }
+
+    .backup-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcff;
+    }
+
+    .backup-row strong,
+    .backup-row span {
+      overflow-wrap: anywhere;
+    }
+
+    .backup-row span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
     .notice {
       border: 1px solid #c9d7ff;
       border-radius: var(--radius);
@@ -814,10 +1057,14 @@
       .actions { justify-content: flex-start; }
       .actions > button { width: 100%; }
       .toolbar { grid-template-columns: 1fr; }
+      .planning-grid { grid-template-columns: 1fr; }
+      .theme-add-row { grid-template-columns: 1fr; }
+      .year-calendar { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .product-row { grid-template-columns: 1fr; }
       .offer-row { grid-template-columns: 1fr; }
       .ad-row { grid-template-columns: 1fr; }
+      .backup-row { grid-template-columns: 1fr; }
       .strategy-grid,
       .copy-grid,
       .rhythm-grid,
@@ -847,6 +1094,8 @@
         <button id="newBtn" class="side-button">+ Нов повод</button>
         <button id="settingsBtn" class="side-button secondary">Supabase настройки</button>
         <h2>Резервен архив</h2>
+        <button id="createBackupBtn" class="side-button secondary">Създай backup</button>
+        <button id="backupHistoryBtn" class="side-button secondary">История backups</button>
         <button id="exportBtn" class="side-button secondary">Експорт JSON</button>
         <button id="importBtn" class="side-button secondary">Импорт JSON</button>
         <input id="importFile" type="file" accept="application/json" hidden>
@@ -870,6 +1119,7 @@
 
       <nav class="jump-nav" aria-label="Бърза навигация">
         <button class="jump-chip" data-scroll-target="cards">Кампании</button>
+        <button class="jump-chip" data-scroll-target="planningPanel">Годишен календар</button>
         <button class="jump-chip" data-type-target="evergreen">Вечнозелени</button>
         <button class="jump-chip" data-scroll-target="goldenRule">Златно правило</button>
         <button class="jump-chip" data-scroll-target="topCampaigns">Топ кампании</button>
@@ -910,6 +1160,34 @@
             <option value="all">Всички</option>
           </select>
         </div>
+      </section>
+
+      <section id="planningPanel" class="planning-panel" aria-label="Годишен календар и теми">
+        <div class="planning-head">
+          <div>
+            <h3>Годишен календар / Какво предстои</h3>
+            <p>Бърз поглед към активните месеци, следващите кампании и популярните теми за планиране.</p>
+          </div>
+          <span id="planningCount" class="planning-count">0 кампании</span>
+        </div>
+
+        <div class="planning-grid">
+          <div class="planning-box">
+            <h4>Какво предстои</h4>
+            <div id="upcomingList" class="upcoming-list"></div>
+          </div>
+
+          <div class="planning-box">
+            <h4>Облак с теми</h4>
+            <div id="themeCloud" class="theme-cloud"></div>
+            <div class="theme-add-row">
+              <input id="newThemeInput" placeholder="Добави тема, напр. имен ден">
+              <button id="addThemeBtn" class="ghost" type="button">+ Добави</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="yearCalendar" class="year-calendar"></div>
       </section>
 
       <section id="cards" class="grid"></section>
@@ -1093,7 +1371,7 @@
     <div class="modal-panel">
       <h3>Supabase настройки</h3>
       <div class="notice">
-        Приложението работи и без Supabase чрез localStorage. За постоянен запис създай таблицата от <strong>supabase/schema.sql</strong>, после въведи Project URL и public anon key.
+        Приложението вече има вградени Supabase настройки за този проект. Редактирай ги само ако сменяш Supabase проекта или искаш временно да работиш с друга база.
       </div>
       <div class="field">
         <label for="supabaseUrl">Supabase Project URL</label>
@@ -1121,6 +1399,18 @@
     </div>
   </section>
 
+  <section id="backupModal" class="modal" aria-hidden="true">
+    <div class="modal-panel code-modal-panel">
+      <h3>Backup история</h3>
+      <div class="notice">Backup-ите пазят текущите карти, стратегическите секции и добавените теми за активния профил.</div>
+      <div id="backupList" class="backup-list"></div>
+      <div class="actions">
+        <button id="closeBackupModalBtn" class="ghost">Затвори</button>
+        <button id="refreshBackupsBtn" class="primary">Обнови</button>
+      </div>
+    </div>
+  </section>
+
   <button id="backToTopBtn" class="back-to-top" type="button" aria-label="Нагоре">↑</button>
 
   <div id="toast" class="toast"></div>
@@ -1131,9 +1421,18 @@
     const SECTIONS_KEY = "teniskata_strategy_sections_v1";
     const PROFILE_KEY = "teniskata_active_profile_v1";
     const CUSTOM_PROFILES_KEY = "teniskata_custom_profiles_v1";
+    const CUSTOM_THEMES_KEY = "teniskata_custom_theme_cloud_v1";
+    const DEFAULT_SUPABASE_URL = "https://igivkwvvfzeonfixghsv.supabase.co";
+    const DEFAULT_SUPABASE_KEY = "sb_publishable_vhIXbZgVnHF4W78YUDzQ8Q_UCX5dPgt";
     const TABLE_NAME = "marketing_occasions";
     const PROFILE_TABLE_NAME = "marketing_profiles";
+    const BACKUP_TABLE_NAME = "marketing_backups";
     const MONTHS = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
+    const POPULAR_THEME_DEFAULTS = [
+      "Коледа", "Black Friday", "Лято", "8 март", "Свети Валентин", "Хелоуин",
+      "Back to school", "Подарък за мама", "Подарък за татко", "Семейни комплекти",
+      "Детски тениски", "Имен ден", "Рожден ден", "Учители", "Пътуване", "Pet lovers"
+    ];
     const BUILTIN_PROFILE_IDS = ["teniski", "kartini", "ikoni"];
     const SITE_PROFILES = {
       teniski: {
@@ -1454,6 +1753,7 @@
     const emptyState = $("emptyState");
     const drawer = $("drawer");
     const settingsModal = $("settingsModal");
+    const backupModal = $("backupModal");
     const toast = $("toast");
 
     function getSavedProfile() {
@@ -1467,6 +1767,23 @@
 
     function sectionsKey(profile = currentProfile) {
       return profile === "teniski" ? SECTIONS_KEY : `${SECTIONS_KEY}_${profile}`;
+    }
+
+    function themesKey(profile = currentProfile) {
+      return profile === "teniski" ? CUSTOM_THEMES_KEY : `${CUSTOM_THEMES_KEY}_${profile}`;
+    }
+
+    function getCustomThemes() {
+      try {
+        const themes = JSON.parse(localStorage.getItem(themesKey())) || [];
+        return Array.isArray(themes) ? themes.filter(Boolean) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCustomThemes(themes) {
+      localStorage.setItem(themesKey(), JSON.stringify(themes));
     }
 
     function getInitialData(profile = currentProfile) {
@@ -1733,6 +2050,153 @@
       });
       cards.querySelectorAll("[data-product-copy]").forEach((button) => {
         button.addEventListener("click", () => copyProductField(button.dataset.productCopy, button.dataset.productField));
+      });
+
+      renderPlanning();
+    }
+
+    function renderPlanning() {
+      if (!$("planningPanel")) return;
+      $("planningCount").textContent = `${occasions.length} кампании`;
+      renderUpcomingList();
+      renderThemeCloud();
+      renderYearCalendar();
+    }
+
+    function monthIndex(month) {
+      return MONTHS.indexOf(month);
+    }
+
+    function monthDistance(month, fromIndex = new Date().getMonth()) {
+      const index = monthIndex(month);
+      return index < 0 ? 99 : (index - fromIndex + 12) % 12;
+    }
+
+    function typeLabel(type) {
+      return {
+        month: "месечна",
+        evergreen: "вечнозелена",
+        top: "топ"
+      }[type] || type || "кампания";
+    }
+
+    function upcomingItems(limit = 6) {
+      return [...occasions]
+        .filter((item) => monthIndex(item.month) >= 0)
+        .sort((a, b) => {
+          const byMonth = monthDistance(a.month) - monthDistance(b.month);
+          if (byMonth) return byMonth;
+          const typeRank = { top: 0, month: 1, evergreen: 2 };
+          return (typeRank[a.type] ?? 9) - (typeRank[b.type] ?? 9) || String(a.title).localeCompare(String(b.title));
+        })
+        .slice(0, limit);
+    }
+
+    function renderUpcomingList() {
+      const list = $("upcomingList");
+      const items = upcomingItems();
+      if (!items.length) {
+        list.innerHTML = `<div class="empty show">Няма кампании с месец. Добави месец към поводите, за да се покажат тук.</div>`;
+        return;
+      }
+
+      list.innerHTML = items.map((item) => {
+        const accent = sanitizeColor(item.backgroundColor || "#3157d5");
+        const soft = hexToRgba(accent, 0.11);
+        const muted = hexToRgba(accent, 0.24);
+        return `
+          <button class="upcoming-item" data-planning-edit="${escapeHtml(item.id)}" style="--card-accent: ${accent}; --card-soft: ${soft}; --card-muted: ${muted};" type="button">
+            <span class="upcoming-meta">${escapeHtml(item.month || "")} · ${escapeHtml(typeLabel(item.type))}</span>
+            <strong>${escapeHtml(item.title || "")}</strong>
+            <span>${escapeHtml(item.theme || campaignPeriodLabel(item))}</span>
+          </button>
+        `;
+      }).join("");
+
+      list.querySelectorAll("[data-planning-edit]").forEach((button) => {
+        button.addEventListener("click", () => openEditor(button.dataset.planningEdit));
+      });
+    }
+
+    function uniqueThemes(themes) {
+      const seen = new Set();
+      return themes
+        .map((theme) => String(theme || "").trim())
+        .filter(Boolean)
+        .filter((theme) => {
+          const key = theme.toLowerCase();
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+    }
+
+    function renderThemeCloud() {
+      const cloud = $("themeCloud");
+      const customThemes = getCustomThemes();
+      const themes = uniqueThemes([...POPULAR_THEME_DEFAULTS, ...customThemes]);
+      cloud.innerHTML = `
+        <button class="theme-chip calendar-chip" data-theme-scroll="yearCalendar" type="button">Годишен календар</button>
+        ${themes.map((theme) => `<button class="theme-chip" data-theme-filter="${escapeHtml(theme)}" type="button">${escapeHtml(theme)}</button>`).join("")}
+      `;
+
+      cloud.querySelectorAll("[data-theme-scroll]").forEach((button) => {
+        button.addEventListener("click", () => scrollToSection(button.dataset.themeScroll));
+      });
+      cloud.querySelectorAll("[data-theme-filter]").forEach((button) => {
+        button.addEventListener("click", () => applyThemeFilter(button.dataset.themeFilter));
+      });
+    }
+
+    function applyThemeFilter(theme) {
+      $("searchInput").value = theme;
+      $("typeFilter").value = "all";
+      $("monthFilter").value = "all";
+      currentFilterType = "all";
+      document.querySelectorAll("[data-filter-type]").forEach((node) => node.classList.remove("active"));
+      document.querySelector('[data-filter-type="all"]')?.classList.add("active");
+      render();
+      requestAnimationFrame(() => scrollToSection("cards"));
+    }
+
+    function addCustomTheme() {
+      const input = $("newThemeInput");
+      const theme = input.value.trim();
+      if (!theme) return;
+      const themes = uniqueThemes([...getCustomThemes(), theme]);
+      const alreadyExists = uniqueThemes([...POPULAR_THEME_DEFAULTS, ...getCustomThemes()]).some((item) => item.toLowerCase() === theme.toLowerCase());
+      if (alreadyExists) {
+        showToast("Тази тема вече е в облака.");
+        input.value = "";
+        return;
+      }
+      saveCustomThemes(themes);
+      input.value = "";
+      renderPlanning();
+      showToast("Темата е добавена.");
+    }
+
+    function renderYearCalendar() {
+      const calendar = $("yearCalendar");
+      const currentMonth = new Date().getMonth();
+      calendar.innerHTML = MONTHS.map((month, index) => {
+        const items = occasions
+          .filter((item) => item.month === month)
+          .sort((a, b) => String(a.title).localeCompare(String(b.title)));
+        const visible = items.slice(0, 5);
+        return `
+          <article class="month-bucket ${index === currentMonth ? "current" : ""}">
+            <h4>${escapeHtml(month)} <span class="month-count">${items.length}</span></h4>
+            <div class="month-campaigns">
+              ${visible.map((item) => `<button class="month-campaign" data-planning-edit="${escapeHtml(item.id)}" type="button">${escapeHtml(item.title)}</button>`).join("")}
+              ${items.length > visible.length ? `<span class="month-more">+ още ${items.length - visible.length}</span>` : ""}
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      calendar.querySelectorAll("[data-planning-edit]").forEach((button) => {
+        button.addEventListener("click", () => openEditor(button.dataset.planningEdit));
       });
     }
 
@@ -2130,9 +2594,16 @@
 
     function getSettings() {
       try {
-        return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+        return {
+          url: saved.url || DEFAULT_SUPABASE_URL,
+          key: saved.key || DEFAULT_SUPABASE_KEY
+        };
       } catch {
-        return {};
+        return {
+          url: DEFAULT_SUPABASE_URL,
+          key: DEFAULT_SUPABASE_KEY
+        };
       }
     }
 
@@ -2157,7 +2628,7 @@
     function updateSyncStatus() {
       const hasSettings = Boolean(getSettings().url && getSettings().key);
       $("syncDot").classList.toggle("online", hasSettings);
-      $("syncText").textContent = hasSettings ? "Авто Supabase" : "Локален режим";
+      $("syncText").textContent = hasSettings ? "Вграден Supabase" : "Локален режим";
     }
 
     function queueAutoSync() {
@@ -2334,6 +2805,147 @@
       reader.readAsText(file);
     }
 
+    function backupLabel() {
+      const profile = SITE_PROFILES[currentProfile]?.label || currentProfile;
+      return `${profile} backup ${new Date().toLocaleString("bg-BG")}`;
+    }
+
+    function backupPayload() {
+      return {
+        version: 1,
+        siteProfile: currentProfile,
+        profile: SITE_PROFILES[currentProfile] || null,
+        occasions,
+        sections: getEditableSections(),
+        customThemes: getCustomThemes(),
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    async function createCloudBackup() {
+      const client = supabaseClient();
+      if (!client) {
+        settingsModal.classList.add("open");
+        showToast("Нужни са Supabase настройки за cloud backup.");
+        return;
+      }
+
+      const row = {
+        id: createId(),
+        site_profile: currentProfile,
+        label: backupLabel(),
+        payload: backupPayload()
+      };
+      const { error } = await client.from(BACKUP_TABLE_NAME).insert(row);
+      if (error) {
+        showToast(`Backup грешка: ${error.message}`);
+        return;
+      }
+      showToast("Cloud backup е създаден.");
+    }
+
+    async function openBackupHistory() {
+      backupModal.classList.add("open");
+      backupModal.setAttribute("aria-hidden", "false");
+      await loadBackupHistory();
+    }
+
+    function closeBackupHistory() {
+      backupModal.classList.remove("open");
+      backupModal.setAttribute("aria-hidden", "true");
+    }
+
+    async function loadBackupHistory() {
+      const list = $("backupList");
+      const client = supabaseClient();
+      if (!client) {
+        list.innerHTML = `<div class="empty show">Нужни са Supabase настройки за backup история.</div>`;
+        return;
+      }
+
+      list.innerHTML = `<div class="empty show">Зареждам backup история...</div>`;
+      const { data, error } = await client
+        .from(BACKUP_TABLE_NAME)
+        .select("id,label,created_at")
+        .eq("site_profile", currentProfile)
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (error) {
+        list.innerHTML = `<div class="empty show">Supabase грешка: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data?.length) {
+        list.innerHTML = `<div class="empty show">Още няма backup-и за този профил.</div>`;
+        return;
+      }
+
+      list.innerHTML = data.map((backup) => `
+        <div class="backup-row">
+          <div>
+            <strong>${escapeHtml(backup.label || "Backup")}</strong>
+            <span>${escapeHtml(formatBackupDate(backup.created_at))}</span>
+          </div>
+          <button class="mini-button" data-restore-backup="${escapeHtml(backup.id)}" type="button">Възстанови</button>
+          <button class="mini-button" data-delete-backup="${escapeHtml(backup.id)}" type="button">Изтрий</button>
+        </div>
+      `).join("");
+
+      list.querySelectorAll("[data-restore-backup]").forEach((button) => {
+        button.addEventListener("click", () => restoreCloudBackup(button.dataset.restoreBackup));
+      });
+      list.querySelectorAll("[data-delete-backup]").forEach((button) => {
+        button.addEventListener("click", () => deleteCloudBackup(button.dataset.deleteBackup));
+      });
+    }
+
+    function formatBackupDate(value) {
+      if (!value) return "";
+      return new Date(value).toLocaleString("bg-BG");
+    }
+
+    async function restoreCloudBackup(id) {
+      if (!id || !confirm("Да възстановя ли този backup? Текущите локални данни за профила ще бъдат заменени.")) return;
+      const client = supabaseClient();
+      const { data, error } = await client
+        .from(BACKUP_TABLE_NAME)
+        .select("payload")
+        .eq("id", id)
+        .single();
+
+      if (error || !data?.payload) {
+        showToast(`Backup грешка: ${error?.message || "липсва payload"}`);
+        return;
+      }
+
+      const payload = data.payload;
+      occasions = Array.isArray(payload.occasions) ? payload.occasions.map(normalizeOccasion) : [];
+      if (payload.sections) {
+        localStorage.setItem(sectionsKey(), JSON.stringify(payload.sections));
+      }
+      if (Array.isArray(payload.customThemes)) {
+        saveCustomThemes(payload.customThemes);
+      }
+      saveLocal();
+      loadEditableSections();
+      render();
+      closeBackupHistory();
+      showToast("Backup-ът е възстановен.");
+    }
+
+    async function deleteCloudBackup(id) {
+      if (!id || !confirm("Да изтрия ли този backup?")) return;
+      const client = supabaseClient();
+      const { error } = await client.from(BACKUP_TABLE_NAME).delete().eq("id", id);
+      if (error) {
+        showToast(`Backup грешка: ${error.message}`);
+        return;
+      }
+      showToast("Backup-ът е изтрит.");
+      await loadBackupHistory();
+    }
+
     function bindEvents() {
       $("newBtn").addEventListener("click", () => openEditor(null));
       $("newBtnTop").addEventListener("click", () => openEditor(null));
@@ -2361,6 +2973,13 @@
       $("searchInput").addEventListener("input", render);
       $("typeFilter").addEventListener("change", render);
       $("monthFilter").addEventListener("change", render);
+      $("addThemeBtn").addEventListener("click", addCustomTheme);
+      $("newThemeInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addCustomTheme();
+        }
+      });
       $("settingsBtn").addEventListener("click", () => {
         const settings = getSettings();
         $("supabaseUrl").value = settings.url || "";
@@ -2372,6 +2991,10 @@
       $("closeCodeModalBtn").addEventListener("click", closeCodeModal);
       $("copyCodeModalBtn").addEventListener("click", copyCodeModal);
       $("backToTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      $("createBackupBtn").addEventListener("click", createCloudBackup);
+      $("backupHistoryBtn").addEventListener("click", openBackupHistory);
+      $("closeBackupModalBtn").addEventListener("click", closeBackupHistory);
+      $("refreshBackupsBtn").addEventListener("click", loadBackupHistory);
       $("exportBtn").addEventListener("click", exportJson);
       $("importBtn").addEventListener("click", () => $("importFile").click());
       $("importFile").addEventListener("change", (event) => importJson(event.target.files[0]));

@@ -31,6 +31,14 @@ create table if not exists public.marketing_profiles (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.marketing_backups (
+  id uuid primary key,
+  site_profile text not null default 'teniski',
+  label text not null,
+  payload jsonb not null,
+  created_at timestamptz not null default now()
+);
+
 alter table public.marketing_occasions
 add column if not exists offer_texts text[] not null default '{}';
 
@@ -57,16 +65,21 @@ add column if not exists site_profile text not null default 'teniski';
 
 alter table public.marketing_occasions enable row level security;
 alter table public.marketing_profiles enable row level security;
+alter table public.marketing_backups enable row level security;
 
 grant select, insert, update, delete on public.marketing_occasions to anon, authenticated;
 grant select, insert, update, delete on public.marketing_occasions to service_role;
 grant select, insert, update, delete on public.marketing_profiles to anon, authenticated;
 grant select, insert, update, delete on public.marketing_profiles to service_role;
+grant select, insert, update, delete on public.marketing_backups to anon, authenticated;
+grant select, insert, update, delete on public.marketing_backups to service_role;
 
 drop policy if exists "Allow public reads for marketing occasions" on public.marketing_occasions;
 drop policy if exists "Allow public writes for marketing occasions" on public.marketing_occasions;
 drop policy if exists "Allow public reads for marketing profiles" on public.marketing_profiles;
 drop policy if exists "Allow public writes for marketing profiles" on public.marketing_profiles;
+drop policy if exists "Allow public reads for marketing backups" on public.marketing_backups;
+drop policy if exists "Allow public writes for marketing backups" on public.marketing_backups;
 
 create policy "Allow public reads for marketing occasions"
 on public.marketing_occasions
@@ -94,8 +107,22 @@ to anon, authenticated
 using (true)
 with check (true);
 
+create policy "Allow public reads for marketing backups"
+on public.marketing_backups
+for select
+to anon, authenticated
+using (true);
+
+create policy "Allow public writes for marketing backups"
+on public.marketing_backups
+for all
+to anon, authenticated
+using (true)
+with check (true);
+
 create index if not exists marketing_occasions_type_idx on public.marketing_occasions (type);
 create index if not exists marketing_occasions_site_profile_idx on public.marketing_occasions (site_profile);
 create index if not exists marketing_occasions_month_idx on public.marketing_occasions (month);
 create index if not exists marketing_occasions_updated_at_idx on public.marketing_occasions (updated_at desc);
 create index if not exists marketing_profiles_updated_at_idx on public.marketing_profiles (updated_at desc);
+create index if not exists marketing_backups_site_profile_created_at_idx on public.marketing_backups (site_profile, created_at desc);
