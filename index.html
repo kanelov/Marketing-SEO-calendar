@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Маркетинг календар за тениски</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --ink: #152033;
+      --muted: #657084;
+      --line: #dfe5ef;
+      --brand: #3157d5;
+      --brand-soft: #edf2ff;
+      --good: #0f9f6e;
+      --danger: #d94848;
+      --warn: #c98214;
+      --shadow: 0 14px 34px rgba(21, 32, 51, .08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button {
+      border: 0;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 320px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      padding: 24px;
+      background: #101827;
+      color: #fff;
+    }
+
+    main {
+      padding: 28px;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .brand p {
+      margin: 0;
+      color: #b9c2d4;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(255,255,255,.09);
+      color: #d9e5ff;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--warn);
+    }
+
+    .status-dot.online { background: var(--good); }
+
+    .sidebar-actions,
+    .sidebar-section {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .side-button {
+      width: 100%;
+      padding: 12px 14px;
+      text-align: left;
+      color: #fff;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .side-button:hover,
+    .side-button.active {
+      background: #fff;
+      color: #101827;
+    }
+
+    .side-button.secondary {
+      color: #dbe5f6;
+      background: transparent;
+    }
+
+    .sidebar-section h2 {
+      margin: 0 0 4px;
+      color: #97a5bb;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .topbar > div:first-child {
+      min-width: 0;
+    }
+
+    .topbar h2 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 42px);
+    }
+
+    .topbar p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .profile-switcher {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .profile-button {
+      padding: 10px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #263553;
+      background: #f6f8fc;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .profile-button.active {
+      color: #fff;
+      background: var(--brand);
+      border-color: var(--brand);
+    }
+
+    .profile-button.add-profile {
+      color: var(--brand);
+      background: #fff;
+      border-style: dashed;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .primary { background: var(--brand); color: #fff; padding: 11px 14px; }
+    .ghost { background: #fff; color: var(--ink); padding: 10px 14px; border: 1px solid var(--line); }
+    .danger { background: #fff1f1; color: var(--danger); padding: 10px 14px; border: 1px solid #ffd6d6; }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 180px 180px;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .jump-nav {
+      position: sticky;
+      top: 0;
+      z-index: 8;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(246, 247, 251, .94);
+      backdrop-filter: blur(10px);
+    }
+
+    .jump-chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #263553;
+      background: #fff;
+      border: 1px solid #d9e1ef;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .jump-chip:hover {
+      background: var(--brand-soft);
+      border-color: #b9c8ff;
+    }
+
+    .back-to-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 55;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--brand);
+      box-shadow: var(--shadow);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    label {
+      color: #4c5669;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .055em;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #9bb0ff;
+      box-shadow: 0 0 0 3px rgba(49, 87, 213, .12);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--card-accent, var(--brand));
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 1px 0 rgba(21, 32, 51, .03);
+      overflow: hidden;
+    }
+
+    .card-image {
+      height: 145px;
+      background: var(--card-accent, var(--brand));
+      overflow: hidden;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-image-placeholder {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 20px;
+      color: #fff;
+      background: var(--card-accent, var(--brand));
+      font-family: "Lora", Georgia, serif;
+      font-size: clamp(26px, 5vw, 46px);
+      font-weight: 700;
+      line-height: 1.08;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      hyphens: auto;
+    }
+
+    .card-body {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .card-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      min-width: 0;
+    }
+
+    .card-head > div {
+      min-width: 0;
+    }
+
+    .card h3 {
+      display: inline-block;
+      max-width: 100%;
+      margin: 0 0 6px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      color: var(--card-accent, var(--ink));
+      background: var(--card-soft, #f1f4f8);
+      font-size: 20px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+      hyphens: auto;
+    }
+
+    .campaign-period {
+      color: #536079;
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    h1, h2, h3,
+    .brand h1,
+    .sidebar-section h2,
+    .topbar h2,
+    .card h3,
+    .drawer-header h3,
+    .modal-panel h3 {
+      font-family: "Lora", Georgia, serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .035em;
+      white-space: normal;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: var(--card-accent, #2847a8);
+      background: var(--card-soft, var(--brand-soft));
+      border: 1px solid var(--card-muted, #d9e4ff);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 5px 8px;
+      border-radius: 999px;
+      color: #48546a;
+      background: var(--card-soft, #f1f4f8);
+      border: 1px solid var(--card-muted, transparent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .text-block {
+      color: var(--muted);
+      line-height: 1.48;
+      font-size: 14px;
+    }
+
+    .offer {
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--card-muted, #d9e4ff);
+      border-left: 4px solid var(--card-accent, var(--brand));
+      background: var(--card-soft, #f7f9ff);
+      line-height: 1.45;
+      font-weight: 700;
+    }
+
+    .offer-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .product-buttons {
+      display: grid;
+      gap: 8px;
+    }
+
+    .product-copy-row {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: #203056;
+      background: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .product-copy-row:hover {
+      border-color: #9bb0ff;
+      background: #f6f8ff;
+    }
+
+    .product-thumb {
+      display: block;
+      width: 44px;
+      height: 44px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #edf1f7;
+    }
+
+    .product-editor-thumb {
+      width: 72px;
+      height: 72px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--line);
+      background: #edf1f7;
+    }
+
+    .product-preview-cell {
+      display: grid;
+      gap: 7px;
+      justify-items: start;
+    }
+
+    .gallery-link {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      color: var(--card-accent, #2847a8);
+      background: var(--card-soft, var(--brand-soft));
+      border: 1px solid var(--card-muted, #d9e4ff);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .gallery-link:hover {
+      background: var(--card-muted, #dfe7ff);
+    }
+
+    .mini-button {
+      padding: 8px 10px;
+      background: #f1f4f8;
+      color: #253149;
+      font-size: 13px;
+    }
+
+    .mini-button:hover { background: #e5ebf4; }
+
+    .ad-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .ad-copy {
+      position: relative;
+      padding: 12px 12px 12px 34px;
+      border-radius: var(--radius);
+      color: #24314b;
+      background: var(--card-soft, #f0f4ff);
+      border: 1px solid var(--card-muted, #d9e4ff);
+      border-left: 4px solid var(--card-accent, #8ea4ff);
+      line-height: 1.45;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .ad-copy::before {
+      content: "“";
+      position: absolute;
+      left: 12px;
+      top: 6px;
+      color: var(--card-accent, #9aaef0);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .strategy-stack {
+      display: grid;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+      gap: 16px;
+    }
+
+    .strategy-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 18px;
+      box-shadow: 0 1px 0 rgba(21, 32, 51, .03);
+    }
+
+    .strategy-panel.dark {
+      color: #fff;
+      border-color: #182235;
+      background: #101827;
+    }
+
+    .strategy-panel h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .editable-section[contenteditable="true"] {
+      outline: 2px dashed transparent;
+    }
+
+    .editable-section[contenteditable="true"]:focus {
+      outline-color: #9bb0ff;
+      outline-offset: 4px;
+      border-radius: var(--radius);
+    }
+
+    .strategy-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .strategy-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .strategy-item,
+    .rhythm-step,
+    .tip-item {
+      padding: 12px;
+      border-radius: var(--radius);
+      background: #f6f8fc;
+      color: #253149;
+      line-height: 1.45;
+      font-size: 14px;
+    }
+
+    .dark .strategy-item {
+      color: #dbe5f6;
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .rhythm-grid,
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .copy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .copy-bad { border-left: 4px solid var(--danger); }
+    .copy-good { border-left: 4px solid var(--good); }
+
+    .drawer {
+      position: fixed;
+      inset: 0 0 0 auto;
+      display: none;
+      width: min(780px, 100%);
+      background: #fff;
+      box-shadow: var(--shadow);
+      z-index: 30;
+      overflow: auto;
+    }
+
+    .drawer.open { display: block; }
+
+    .drawer-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+    }
+
+    .drawer-header h3 { margin: 0; font-size: 22px; }
+    .drawer-content { padding: 22px; display: grid; gap: 20px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .form-grid .wide { grid-column: 1 / -1; }
+
+    .section-box {
+      display: grid;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcff;
+    }
+
+    .section-box h4 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .product-row,
+    .offer-row,
+    .ad-row {
+      display: grid;
+      grid-template-columns: 72px minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .ad-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .offer-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .preview {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 14px;
+      overflow: auto;
+      min-height: 140px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(16, 24, 39, .55);
+      z-index: 40;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-panel {
+      width: min(620px, 100%);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .modal-panel h3 { margin: 0; }
+
+    .code-modal-panel {
+      width: min(920px, 100%);
+    }
+
+    .code-output {
+      min-height: 360px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    .notice {
+      border: 1px solid #c9d7ff;
+      border-radius: var(--radius);
+      background: #f3f6ff;
+      color: #29408f;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: none;
+      max-width: min(560px, calc(100vw - 24px));
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      color: #fff;
+      background: #101827;
+      box-shadow: var(--shadow);
+      z-index: 60;
+    }
+
+    .toast.show { display: block; }
+
+    .empty {
+      display: none;
+      padding: 36px;
+      border: 1px dashed #c9d2e3;
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty.show { display: block; }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+      }
+      main { padding: 18px; }
+      .topbar { flex-direction: column; }
+      .actions { justify-content: flex-start; }
+      .actions > button { width: 100%; }
+      .toolbar { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .product-row { grid-template-columns: 1fr; }
+      .offer-row { grid-template-columns: 1fr; }
+      .ad-row { grid-template-columns: 1fr; }
+      .strategy-grid,
+      .copy-grid,
+      .rhythm-grid,
+      .tips-grid { grid-template-columns: 1fr; }
+      .product-copy-row { grid-template-columns: 44px minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside>
+      <div class="brand">
+        <span class="status-pill"><span id="syncDot" class="status-dot"></span><span id="syncText">Локален режим</span></span>
+        <h1>Маркетинг календар</h1>
+        <p>Редактирай поводи, рекламни текстове, email HTML, топ продукти и категории за кампании на тениски.</p>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="side-button active" data-filter-type="all">Всички поводи</button>
+        <button class="side-button" data-filter-type="month">Месечен календар</button>
+        <button class="side-button" data-filter-type="evergreen">Вечнозелени категории</button>
+        <button class="side-button" data-filter-type="top">Топ кампании</button>
+      </div>
+
+      <div class="sidebar-section">
+        <h2>Данни</h2>
+        <button id="newBtn" class="side-button">+ Нов повод</button>
+        <button id="settingsBtn" class="side-button secondary">Supabase настройки</button>
+        <h2>Резервен архив</h2>
+        <button id="exportBtn" class="side-button secondary">Експорт JSON</button>
+        <button id="importBtn" class="side-button secondary">Импорт JSON</button>
+        <input id="importFile" type="file" accept="application/json" hidden>
+      </div>
+    </aside>
+
+    <main>
+      <section id="profileSwitcher" class="profile-switcher" aria-label="Профили за сайтове"></section>
+
+      <section class="topbar">
+        <div>
+          <h2 id="profileTitle">Календар & SEO библиотека</h2>
+          <p id="profileIntro">Всеки повод има редактируеми полета за оферта, аудитория, CTA, HTML код за email кампания, 3 топ продукта с линкове, снимка на категория и няколко рекламни текста.</p>
+        </div>
+        <div class="actions">
+          <button id="saveSectionsBtn" class="ghost">Запази секциите</button>
+          <button id="resetBtn" class="ghost">Върни примерите</button>
+          <button id="newBtnTop" class="primary">+ Добави повод</button>
+        </div>
+      </section>
+
+      <nav class="jump-nav" aria-label="Бърза навигация">
+        <button class="jump-chip" data-scroll-target="cards">Кампании</button>
+        <button class="jump-chip" data-type-target="evergreen">Вечнозелени</button>
+        <button class="jump-chip" data-scroll-target="goldenRule">Златно правило</button>
+        <button class="jump-chip" data-scroll-target="topCampaigns">Топ кампании</button>
+        <button class="jump-chip" data-scroll-target="weeklyRhythm">Седмичен ритъм</button>
+        <button class="jump-chip" data-scroll-target="copywriting">Копирайтинг</button>
+        <button class="jump-chip" data-scroll-target="marketingTips">SEO & Facebook</button>
+        <button class="jump-chip" data-month-target="Януари">Януари</button>
+        <button class="jump-chip" data-month-target="Февруари">Февруари</button>
+        <button class="jump-chip" data-month-target="Март">Март</button>
+        <button class="jump-chip" data-month-target="Април">Април</button>
+        <button class="jump-chip" data-month-target="Май">Май</button>
+        <button class="jump-chip" data-month-target="Юни">Юни</button>
+        <button class="jump-chip" data-month-target="Юли">Юли</button>
+        <button class="jump-chip" data-month-target="Август">Август</button>
+        <button class="jump-chip" data-month-target="Септември">Септември</button>
+        <button class="jump-chip" data-month-target="Октомври">Октомври</button>
+        <button class="jump-chip" data-month-target="Ноември">Ноември</button>
+        <button class="jump-chip" data-month-target="Декември">Декември</button>
+      </nav>
+
+      <section class="toolbar">
+        <div class="field">
+          <label for="searchInput">Търсене</label>
+          <input id="searchInput" placeholder="Напр. Коледа, майки, email, море">
+        </div>
+        <div class="field">
+          <label for="typeFilter">Тип</label>
+          <select id="typeFilter">
+            <option value="all">Всички</option>
+            <option value="month">Месец</option>
+            <option value="evergreen">Категория</option>
+            <option value="top">Топ кампания</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="monthFilter">Месец</label>
+          <select id="monthFilter">
+            <option value="all">Всички</option>
+          </select>
+        </div>
+      </section>
+
+      <section id="cards" class="grid"></section>
+      <div id="emptyState" class="empty">Няма намерени поводи. Промени филтъра или добави нов запис.</div>
+
+      <section class="strategy-stack" aria-label="Стратегически секции">
+        <article id="goldenRule" class="strategy-panel editable-section" data-editable-section="goldenRule" contenteditable="true">
+          <h3>Златното правило</h3>
+          <div class="offer">Не продаваме тениска. Продаваме причина човекът да я купи сега.</div>
+          <div class="rhythm-grid" style="margin-top: 12px;">
+            <div class="rhythm-step"><strong>Тема</strong><br>Повод, сезон или конкретна категория.</div>
+            <div class="rhythm-step"><strong>Клиент</strong><br>Точният човек, който разпознава себе си.</div>
+            <div class="rhythm-step"><strong>Оферта</strong><br>Ясна причина да купи сега.</div>
+            <div class="rhythm-step"><strong>CTA</strong><br>Едно действие без колебание.</div>
+          </div>
+        </article>
+
+        <div class="strategy-grid">
+          <article id="topCampaigns" class="strategy-panel dark editable-section" data-editable-section="topCampaigns" contenteditable="true">
+            <h3>Топ кампании</h3>
+            <ul class="strategy-list">
+              <li class="strategy-item"><strong>1. Лято</strong><br>Юни-Юли: „Купи 3, плати 2“.</li>
+              <li class="strategy-item"><strong>2. Хелоуин</strong><br>Октомври: „Алтернатива на костюм“.</li>
+              <li class="strategy-item"><strong>3. Коледа</strong><br>Декември: „Семеен комплект за снимка“.</li>
+              <li class="strategy-item"><strong>4. 8 Март</strong><br>Март: „Подарък за мама + картичка“.</li>
+              <li class="strategy-item"><strong>5. Свети Валентин</strong><br>Февруари: „Комплект за двама с отстъпка“.</li>
+            </ul>
+          </article>
+
+          <article id="weeklyRhythm" class="strategy-panel editable-section" data-editable-section="weeklyRhythm" contenteditable="true">
+            <h3>Седмичен ритъм</h3>
+            <div class="rhythm-grid">
+              <div class="rhythm-step"><strong>1. Събуждане</strong><br>Представяне на темата и създаване на желание.</div>
+              <div class="rhythm-step"><strong>2. Атака</strong><br>Пускане на основната силна оферта.</div>
+              <div class="rhythm-step"><strong>3. Доказателство</strong><br>Отзиви, най-продавани модели и FOMO.</div>
+              <div class="rhythm-step"><strong>4. Финал</strong><br>Последен шанс и ретаргетинг към некупилите.</div>
+            </div>
+            <div class="offer" style="margin-top: 12px;">Пример за юни: „Купи 3, плати 2. Събери комплекта за морето днес.“</div>
+          </article>
+        </div>
+
+        <article id="copywriting" class="strategy-panel editable-section" data-editable-section="copywriting" contenteditable="true">
+          <h3>Майсторски копирайтинг</h3>
+          <div class="offer">Тениска за конкретен човек, конкретен повод и конкретна емоция.</div>
+          <div class="copy-grid" style="margin-top: 12px;">
+            <div class="strategy-item copy-bad"><strong>Слабо</strong><br>„Имаме страхотни тениски с принтове. Купете си.“<br>„Детска тениска с багер. Много качествена.“</div>
+            <div class="strategy-item copy-good"><strong>Силно</strong><br>„За малките откриватели, които спират пред всеки багер на улицата.“<br>„Цветята увяхват, но ‘Обичам те’ до сърцето остава.“</div>
+          </div>
+        </article>
+
+        <article id="marketingTips" class="strategy-panel editable-section" data-editable-section="marketingTips" contenteditable="true">
+          <h3>SEO & Facebook съвети</h3>
+          <div class="tips-grid">
+            <div class="tip-item"><strong>Запази URL адресите</strong><br>Не трий сезонните категории след кампанията. Обновявай ги всяка година.</div>
+            <div class="tip-item"><strong>Internal linking</strong><br>Добавяй „Свързани категории“ и „Най-продавани“ към продуктови и категорийни страници.</div>
+            <div class="tip-item"><strong>Сегментирай аудитории</strong><br>Разделяй „Подарък за мама“, „Ски тениски“, „Halloween“ и други по интерес и повод.</div>
+            <div class="tip-item"><strong>Тествай рекламни текстове</strong><br>Пускай 3 различни послания към една визия, за да видиш кое продава най-евтино.</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <section id="drawer" class="drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <h3 id="drawerTitle">Редакция</h3>
+      <div class="actions">
+        <button id="duplicateBtn" class="ghost">Дублирай</button>
+        <button id="closeDrawerBtn" class="ghost">Затвори</button>
+        <button id="saveBtn" class="primary">Запази</button>
+      </div>
+    </div>
+    <form id="editForm" class="drawer-content">
+      <div class="form-grid">
+        <div class="field">
+          <label for="title">Име на повод</label>
+          <input id="title" required>
+        </div>
+        <div class="field">
+          <label for="type">Тип</label>
+          <select id="type">
+            <option value="month">Месец</option>
+            <option value="evergreen">Вечнозелена категория</option>
+            <option value="top">Топ кампания</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="month">Месец</label>
+          <select id="month"></select>
+        </div>
+        <div class="field">
+          <label for="campaignStart">Кампания от</label>
+          <input id="campaignStart" type="date">
+        </div>
+        <div class="field">
+          <label for="campaignEnd">Кампания до</label>
+          <input id="campaignEnd" type="date">
+        </div>
+        <div class="field">
+          <label for="isEvergreenPeriod">Период</label>
+          <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;font-weight:750;">
+            <input id="isEvergreenPeriod" type="checkbox" style="width:auto;"> Вечнозелена
+          </label>
+        </div>
+        <div class="field">
+          <label for="theme">Тема / етикет</label>
+          <input id="theme" placeholder="Напр. Лято & Море">
+        </div>
+        <div class="field wide">
+          <label for="tags">Ключови думи, разделени със запетая</label>
+          <input id="tags" placeholder="летни тениски, море, ваканция">
+        </div>
+        <div class="field wide">
+          <label for="audience">За кого</label>
+          <textarea id="audience"></textarea>
+        </div>
+        <div class="field wide">
+          <label for="cta">CTA</label>
+          <input id="cta">
+        </div>
+        <div class="field wide">
+          <label for="categoryImageUrl">Линк за снимка на категория</label>
+          <input id="categoryImageUrl" placeholder="https://...">
+        </div>
+        <div class="field wide">
+          <label for="galleryUrl">Линк за галерия</label>
+          <input id="galleryUrl" placeholder="Google Drive папка с криейтиви, видеа и снимки">
+        </div>
+        <div class="field">
+          <label for="backgroundColor">Цвят на карта</label>
+          <input id="backgroundColor" type="color" value="#3157d5">
+        </div>
+      </div>
+
+      <div class="section-box">
+        <h4>Офертни текстове</h4>
+        <div id="offers"></div>
+        <button type="button" id="addOfferBtn" class="ghost">+ Добави офертен текст</button>
+      </div>
+
+      <div class="section-box">
+        <h4>Топ продукти</h4>
+        <div id="products"></div>
+        <button type="button" id="addProductBtn" class="ghost">+ Добави продукт</button>
+      </div>
+
+      <div class="section-box">
+        <h4>Рекламни текстове</h4>
+        <div id="adTexts"></div>
+        <button type="button" id="addAdTextBtn" class="ghost">+ Добави рекламен текст</button>
+      </div>
+
+      <div class="section-box">
+        <h4>Email HTML код</h4>
+        <div class="field">
+          <label for="emailHtml">Пейстни HTML за email кампания</label>
+          <textarea id="emailHtml" style="min-height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></textarea>
+        </div>
+        <div class="field">
+          <label>Преглед</label>
+          <div id="emailPreview" class="preview"></div>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <h4>Блог пост за WordPress</h4>
+        <div class="field">
+          <label for="blogPostHtml">Пейстни форматиран HTML/текст за блог статия</label>
+          <textarea id="blogPostHtml" style="min-height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="deleteBtn" class="danger">Изтрий повода</button>
+        <button type="submit" class="primary">Запази промените</button>
+      </div>
+    </form>
+  </section>
+
+  <section id="settingsModal" class="modal" aria-hidden="true">
+    <div class="modal-panel">
+      <h3>Supabase настройки</h3>
+      <div class="notice">
+        Приложението работи и без Supabase чрез localStorage. За постоянен запис създай таблицата от <strong>supabase/schema.sql</strong>, после въведи Project URL и public anon key.
+      </div>
+      <div class="field">
+        <label for="supabaseUrl">Supabase Project URL</label>
+        <input id="supabaseUrl" placeholder="https://xxxxx.supabase.co">
+      </div>
+      <div class="field">
+        <label for="supabaseKey">Public anon key</label>
+        <input id="supabaseKey" placeholder="eyJ...">
+      </div>
+      <div class="actions">
+        <button id="closeSettingsBtn" class="ghost">Затвори</button>
+        <button id="saveSettingsBtn" class="primary">Запази настройки</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="codeModal" class="modal" aria-hidden="true">
+    <div class="modal-panel code-modal-panel">
+      <h3 id="codeModalTitle">Код за копиране</h3>
+      <textarea id="codeModalOutput" class="code-output" readonly></textarea>
+      <div class="actions">
+        <button id="closeCodeModalBtn" class="ghost">Затвори</button>
+        <button id="copyCodeModalBtn" class="primary">Копирай</button>
+      </div>
+    </div>
+  </section>
+
+  <button id="backToTopBtn" class="back-to-top" type="button" aria-label="Нагоре">↑</button>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "teniskata_marketing_occasions_v1";
+    const SETTINGS_KEY = "teniskata_supabase_settings_v1";
+    const SECTIONS_KEY = "teniskata_strategy_sections_v1";
+    const PROFILE_KEY = "teniskata_active_profile_v1";
+    const CUSTOM_PROFILES_KEY = "teniskata_custom_profiles_v1";
+    const TABLE_NAME = "marketing_occasions";
+    const PROFILE_TABLE_NAME = "marketing_profiles";
+    const MONTHS = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
+    const BUILTIN_PROFILE_IDS = ["teniski", "kartini", "ikoni"];
+    const SITE_PROFILES = {
+      teniski: {
+        label: "ТЕНИСКИ",
+        title: "Календар & SEO библиотека за тениски",
+        intro: "Всеки повод има редактируеми полета за оферта, аудитория, CTA, HTML код за email кампания, топ продукти, снимка на категория и рекламни текстове."
+      },
+      kartini: {
+        label: "КАРТИНИ",
+        title: "Календар & SEO библиотека за картини",
+        intro: "Профил за кампании с картини, постери, арт подаръци и сезонни колекции със същите редактируеми полета."
+      },
+      ikoni: {
+        label: "ИКОНИ",
+        title: "Календар & SEO библиотека за икони",
+        intro: "Профил за икони, празници, семейни подаръци и духовни поводи със същата структура на картите."
+      }
+    };
+    Object.assign(SITE_PROFILES, loadCustomProfiles());
+
+    const sampleImage = (text, color = "3157d5") =>
+      `https://placehold.co/900x420/${color}/ffffff?text=${encodeURIComponent(text)}`;
+
+    const isGeneratedPlaceholder = (url = "") =>
+      /^https:\/\/placehold\.co\/900x420\//i.test(String(url).trim());
+
+    function loadCustomProfiles() {
+      try {
+        return JSON.parse(localStorage.getItem(CUSTOM_PROFILES_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveCustomProfiles() {
+      const custom = Object.fromEntries(
+        Object.entries(SITE_PROFILES).filter(([id]) => !BUILTIN_PROFILE_IDS.includes(id))
+      );
+      localStorage.setItem(CUSTOM_PROFILES_KEY, JSON.stringify(custom));
+    }
+
+    function createProfileId(label) {
+      const base = label
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || `site-${Date.now().toString(36)}`;
+      let id = base;
+      let counter = 2;
+      while (SITE_PROFILES[id]) {
+        id = `${base}-${counter}`;
+        counter += 1;
+      }
+      return id;
+    }
+
+    const emailTemplate = (title, offer, cta) => `
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;background:#f6f7fb;padding:24px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="620" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;">
+        <tr><td style="padding:28px 28px 10px;"><h1 style="margin:0;color:#152033;">${title}</h1></td></tr>
+        <tr><td style="padding:0 28px 18px;color:#657084;font-size:16px;line-height:1.5;">${offer}</td></tr>
+        <tr><td style="padding:0 28px 30px;"><a href="https://example.com" style="display:inline-block;background:#3157d5;color:#fff;text-decoration:none;padding:13px 18px;border-radius:8px;font-weight:bold;">${cta}</a></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>`.trim();
+
+    const blogTemplate = (title, offer, cta) => `
+<!-- wp:heading -->
+<h2>${title}</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>${offer}</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Избери моделите, които пасват на повода, аудиторията и настроението на кампанията.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:buttons -->
+<div class="wp-block-buttons"><div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://example.com">${cta}</a></div></div>
+<!-- /wp:buttons -->`.trim();
+
+    const baseProducts = (slug) => [
+      { name: "Продукт 1", url: `https://example.com/${slug}-1`, imageUrl: sampleImage(`${slug} продукт 1`, "3157d5") },
+      { name: "Продукт 2", url: `https://example.com/${slug}-2`, imageUrl: sampleImage(`${slug} продукт 2`, "0f9f6e") },
+      { name: "Продукт 3", url: `https://example.com/${slug}-3`, imageUrl: sampleImage(`${slug} продукт 3`, "c98214") }
+    ];
+
+    const evergreenDefaults = [
+      ["Летни тениски", "Юни", ["летни тениски", "море", "ваканция"], "Жени, семейства и хора, стягащи багаж за море и ваканция.", "Купи 3, плати 2 — третата тениска е подарък за куфара.", "Избери своите 3 летни тениски", "Сложи лятото в куфара — тениски за морето, снимките и вечерите, които ще помниш цяла зима.", "letni-teniski", "f2b705"],
+      ["За Майки", "Март", ["тениска за мама", "подарък за мама", "8 март"], "Дъщери, синове, съпрузи и семейства, търсещи емоционален подарък.", "Тениска за мама + безплатна картичка с лично послание.", "Избери подарък, който мама ще носи с усмивка", "Цветята увяхват, но „Обичам те“, напечатано до сърцето, остава завинаги.", "za-mayki", "e35d7c"],
+      ["За Влюбени", "Февруари", ["тениски за влюбени", "комплект за двама", "годишнина"], "Двойки, жени, търсещи подарък за партньор, годишнина, Св. Валентин.", "Комплект за двама — втората тениска с отстъпка.", "Създай комплект за двама", "Не подарявай поредното клише. Подари нещо, което казва: „Това сме ние.“", "za-vlyubeni", "d63384"],
+      ["Коледни тениски", "Декември", ["коледни тениски", "семейни комплекти", "подаръци"], "Майки, семейства, търсещи matching визия за снимки или подаръци.", "Семеен коледен комплект — специална цена при 3+ тениски.", "Създай коледен комплект", "Коледната снимка не започва с елхата. Започва с усмивките и тениските, които правят всички част от една история.", "koledni-teniski", "c81e1e"],
+      ["Halloween тениски", "Октомври", ["Halloween", "без костюм", "есен"], "Родители (градина/училище), млади хора, семейства без костюми.", "Halloween без костюм — тематична тениска с бърза доставка.", "Избери Halloween визия без стрес", "Когато нямаш време за костюм, но детето иска да е част от магията — една тениска решава всичко.", "halloween-teniski", "1f2937"],
+      ["Ски и Планина", "Януари", ["ски тениски", "планина", "сноуборд"], "Скиори, сноубордисти, планинари, живеещи за зимните уикенди.", "Зимен комплект — вземи 2 тениски за теб и ски-бъдито ти с безплатна доставка.", "Избери тениска за зимно приключение", "За хората, които чакат първия сняг повече от Коледа.", "ski-planina", "15a7c9"],
+      ["С Динозаври", "Август", ["динозаври", "детски тениски", "подарък за дете"], "Родители, баби и лели на деца 3–8 години, които обожават динозаври.", "Динозавърски комплект — втора детска тениска с отстъпка.", "Избери за динозавърски експерт", "За малкия експерт, който знае разликата между Т-рекс и трицератопс, но още не иска да си обуе чорапите.", "dinozavri", "169b72"],
+      ["С Багери", "Август", ["багери", "камиони", "детски тениски"], "Родители на деца 2–7 г., които спират пред всеки багер, камион и трактор.", "Комплект за малки строители — 2 детски тениски на специална цена.", "Избери за малък строител", "Ако детето ти казва „багер!“ по 20 пъти на ден — това не е просто тениска. Това е любимата му машина.", "bageri", "d6961c"],
+      ["С Животни", "Април", ["животни", "природа", "детски дизайни"], "Деца и възрастни с любимо животно или силна връзка с природата.", "Избери любимото животно — безплатна доставка при 2 тениски.", "Открий животното, което те описва", "Всеки си има животно, което прилича на него — смело като лъв, свободно като вълк или нежно като пингвин.", "zhivotni", "f17b2a"],
+      ["Pet Lovers", "Април", ["кучета", "котки", "pet lover"], "Хора с кучета и котки, dog moms, cat moms, подарък за приятел с любимец.", "Тениска за pet lover + възможност за персонален текст с името на любимеца.", "Избери тениска за pet lover", "За хората, които имат косми по дрехите, снимки в телефона и любов, която ходи на четири лапи.", "pet-lovers", "b7791f"],
+      ["Семейни комплекти", "Декември", ["семейни тениски", "matching", "фотосесия"], "Майки, семейства с деца, подготвящи фотосесия, празник или ваканция.", "Семеен комплект — отстъпка при 3+ тениски.", "Създай семеен комплект", "Еднакви тениски, различни характери, една семейна история.", "semeini-komplekti", "2563eb"],
+      ["Брат и сестра", "Април", ["брат и сестра", "sibling", "детски комплект"], "Майки с 2+ деца, семейства с новородено, търсещи сладки снимки.", "Sibling комплект — специална цена за 2 тениски.", "Избери Sibling комплект", "За малкия отбор у дома — понякога се карат, но винаги са от една страна.", "brat-sestra", "7c3aed"],
+      ["За Учители", "Май", ["подарък за учител", "24 май", "от класа"], "Родители, родителски групи, ученици и класове.", "Тениска за учител + картичка за подписи от класа.", "Благодари на любимия учител", "Не поредният букет. Подарък, който казва „Благодаря“ всеки път, когато го облече.", "za-uchiteli", "ef4444"],
+      ["За Татко", "Юни", ["подарък за татко", "баща", "семейство"], "Деца, съпруги и семейства, търсещи оригинален подарък.", "Тениска за татко + подаръчна опаковка/картичка.", "Избери подарък за татко", "За човека, който поправя всичко, носи тежките чанти и казва „спокойно, ще го оправя“.", "za-tatko", "475569"],
+      ["За Баба и Дядо", "Декември", ["баба", "дядо", "подарък от внуче"], "Внуци, родители, искащи емоционален подарък от детето.", "Тениска с послание от внучето + картичка.", "Избери подарък от сърце", "Най-малките думи от внучето понякога стават най-големият подарък.", "baba-dyado", "0f766e"],
+      ["За Професии", "Ноември", ["професии", "подарък за колега", "работа"], "Хора гордеещи се с работата си, колеги, екипи, подаръци.", "Подарък за колега — тениска според професията.", "Избери тениска по професия", "За човека, който не просто работи това — той е това, дори след края на работния ден.", "profesii", "38bdf8"],
+      ["Кафе Любители", "Ноември", ["кафе", "barista", "coffee lover"], "Офис хора, баристи, майки, които не започват деня без кафе.", "Кафе тениска + отстъпка при втори модел.", "Виж кафе дизайните", "За хората, които първо пият кафе, после говорят с останалия свят.", "kafe", "92400e"],
+      ["Book Lovers", "Ноември", ["книги", "book lover", "книжни клубове"], "Book lovers, интроверти, учители, книжни клубове.", "Подарък за book lover — тениска + картичка.", "Избери дизайн за book lover", "За човека, който има „само още една глава“ и изведнъж е станало 2 през нощта.", "book-lovers", "818cf8"],
+      ["Plant Lovers", "Април", ["растения", "plant mom", "природа"], "Plant moms, жени с много растения вкъщи, любители на природата.", "Plant lover тениска + безплатна доставка при 2 броя.", "Виж plant lover дизайните", "За хората, които имат повече растения от свободни первази.", "plant-lovers", "22c55e"],
+      ["За Пътуване", "Юни", ["пътуване", "road trip", "travel"], "Пътешественици, двойки, хора обичащи road trips и приключения.", "Travel комплект — 2 тениски за следващото пътуване с безпл. доставка.", "Избери за следващото приключение", "За хората, които вече мислят за следващата дестинация, докато още разопаковат багажа.", "travel", "0ea5e9"],
+      ["Ретро и Vintage", "Юли", ["ретро", "vintage", "80s 90s"], "Млади хора, фенове на 70s/80s/90s стил, харесващи old-school визия.", "Retro drop — лимитирана селекция с винтидж настроение.", "Разгледай ретро моделите", "За хората, които не са родени в 80-те, но някак си им липсват.", "retro-vintage", "7e22ce"],
+      ["Сарказъм и Забавни", "Юли", ["сарказъм", "забавни тениски", "хумор"], "Хора с чувство за хумор, офис екипи, остроумни надписи.", "Подари усмивка — втора забавна тениска с отстъпка.", "Виж забавните дизайни", "За хората, които не обичат small talk, но обичат тениската им да говори вместо тях.", "sarcasm", "eab308"],
+      ["Персонализирани", "Ноември", ["персонализирани", "име", "личен подарък"], "Търсещи уникален подарък, двойки, родители, приятели.", "Създай тениска с име, дата или лично послание.", "Персонализирай своя подарък", "Когато подаръкът има име, дата и история — вече не е просто тениска.", "personalizirani", "ec4899"],
+      ["Моминско парти", "Юли", ["моминско парти", "шаферки", "булка"], "Булки, шаферки, организаторки на моминско парти.", "Комплект за цялата компания — специална цена при 4+ тениски.", "Създай парти комплект", "Една булка, много приятелки и снимки, които ще се показват години наред.", "mominsko-parti", "fb7185"],
+      ["Baby Announcement", "Септември", ["baby announcement", "ще ставам кака", "бебе"], "Бременни жени, семейства с второ дете, сладко обявяване.", "Комплект за батко/кака + новото бебе.", "За голям брат или сестра", "Най-сладкото „ще ставам кака“ започва с тениска, която всички ще снимат.", "baby-announcement", "38bdf8"],
+      ["За Рожден Ден", "Ноември", ["рожден ден", "подарък", "личен подарък"], "Родители, приятели, баби, търсещи личен подарък.", "Подарък за рожден ден с бърза доставка.", "Избери подарък за рожден ден", "Подарък, който не стои в шкафа — носи се, снима се и напомня кой го е избрал.", "birthday", "f472b6"],
+      ["Групи и Екипи", "Септември", ["групи", "екипи", "класове"], "Фирми, класове, клубове, лагери, събития.", "Групова поръчка — специална цена при 5+ тениски.", "Направи групова поръчка", "Когато всички носят едно послание, групата вече изглежда като отбор.", "groups-teams", "64748b"],
+      ["Локална гордост", "Септември", ["градове", "България", "локален дизайн"], "Българи в чужбина, туристи, хора обичащи града си.", "Тениска с мястото, което обичаш.", "Избери локален дизайн", "За хората, които не просто живеят някъде — носят мястото си със себе си.", "local-pride", "dc2626"],
+      ["За Геймъри", "Ноември", ["геймъри", "gaming", "подарък за тийнейджър"], "Тийнейджъри, млади мъже, родители търсещи подарък.", "Подарък за gamer — втора тениска с отстъпка.", "Виж gamer дизайните", "За човека, който казва „още 5 минути“ и изчезва за два часа пред екрана.", "gamers", "6366f1"],
+      ["Art Тениски", "Март", ["арт тениски", "изкуство", "артистични дизайни"], "Хора, които не искат масов принт, а артистична и различна дреха.", "Носи изкуство, не просто принт.", "Разгледай арт дизайните", "За хората, които искат дрехата им да изглежда като малка галерия.", "art-teniski", "d946ef"]
+    ];
+
+    const initialData = [
+      makeOccasion("Януари", "month", "Януари", "Ски & Зима", ["ски тениски", "хижа и планина", "зимни хобита"], "Хора, които обичат ски, планина, зимни почивки, хижи и уикенди извън града.", "Зимен комплект: вземи 2 тениски за планина и получи безплатна доставка.", "Избери за зимното приключение", ["За хората, които чакат първия сняг повече от Коледа. Тениска за уюта след пистата.", "Планината вика. Отговори с дизайн, който носи настроение след всяко спускане."], "skizima", "15a7c9"),
+      makeOccasion("Февруари", "month", "Февруари", "Любов & Приятелство", ["за влюбени", "best friends", "мама и дете"], "Двойки и жени, търсещи оригинален подарък за празника на влюбените или годишнина.", "Комплект за двама: втората тениска с отстъпка за Свети Валентин.", "Създай вашия комплект", ["Не подарявай поредното клише. Подари нещо, което казва: „Това сме ние.“", "Две тениски, една вътрешна шега и подарък, който няма да остане в шкафа."], "love", "d63384"),
+      makeOccasion("Март", "month", "Март", "8 Март & Майки", ["подарък за мама", "арт дизайни", "цветя"], "Деца, съпрузи и жени, които искат да зарадват майка или жена за 8 март.", "Подарък за мама: тениска + красива картичка с послание.", "Избери подарък за нея", ["Цветята увяхват, но „Обичам те“, носен близо до сърцето, остава завинаги.", "Подарък, който мама ще носи с усмивка, а не ще прибере в чекмеджето."], "mama", "e35d7c"),
+      makeOccasion("Април", "month", "Април", "Пролет & Великден", ["детски с животни", "зайчета", "брат и сестра"], "Майки, баби и лели, които искат децата да изглеждат празнично за Великден и снимки.", "Пролетен детски комплект: втората детска тениска с отстъпка.", "Облечи ги за пролетта", ["Свежи тениски за малки откриватели, лов на великденски яйца и празнични снимки.", "За празници, снимки и детски усмивки, които не стоят мирно."], "easter", "169b72"),
+      makeOccasion("Май", "month", "Май", "Учители & Завършване", ["за любим учител", "от целия клас", "24 май"], "Родители, групи, ученици, класове, търсещи различен и запомнящ се подарък.", "Подарък за любим учител: тениска + картичка от класа.", "Благодари на учителя", ["Не поредният букет. Подарък, който казва „Благодаря“ всеки път, когато го облече.", "За учителя, който превърна трудните уроци в хубави спомени."], "teacher", "4f46e5"),
+      makeOccasion("Юни", "month", "Юни", "Лято & Море", ["море/палми", "пътешествия", "летни комплекти"], "Жени, семейства, пътуващи, хора, стягащи багаж за море и ваканция.", "Купи 3, плати 2 — третата тениска е подарък за куфара и лятото.", "Избери 3 летни тениски", ["Сложи лятото в куфара — тениски за морето, снимките и вечерите, които ще помниш цяла зима.", "Три дизайна, едно лято и достатъчно поводи за снимки."], "summer", "e0a019"),
+      makeOccasion("Юли", "month", "Юли", "Активно Лято & Плаж", ["парти/фестивали", "приятелски комплекти", "коктейли"], "Млади хора, приятелски групи, хора пътуващи към къмпинги и фестивали.", "Летен комплект: вземи 2 тениски за почивката и получи безплатна доставка.", "Подготви се за плажа", ["За горещите дни и дългите нощи. Дизайни, с които купонът започва от гардероба.", "Тениски за плаж, фестивал и приятели, които винаги измислят още един план."], "beach", "f17b2a"),
+      makeOccasion("Август", "month", "Август", "Back to School & Детски", ["динозаври/багери", "детска градина", "животни"], "Родители на деца 2-10 г., които подменят дрехите за новия сезон след лятото.", "Подготви детския гардероб: втора детска тениска с отстъпка.", "Облечи ги за есента", ["Ако детето ти казва „багер!“ по 20 пъти на ден, това не е просто тениска. Това е любимата му машина.", "Нови дрехи за нови приключения в градината, училище и навън."], "kids", "d6961c"),
+      makeOccasion("Септември", "month", "Септември", "Училище & Учители", ["back to school", "учители", "първи учебен ден"], "Ученици, родители, учители, майки, търсещи удобни и забавни дрехи за децата.", "Back to school: 2 детски тениски на специална цена за старта на годината.", "Готови за новия сезон", ["Ново начало, нови приятели и тениска, с която детето ще се чувства уверено от първия ден.", "Първият учебен ден заслужава дреха с настроение."], "school", "dd6b20"),
+      makeOccasion("Октомври", "month", "Октомври", "Хелоуин & Есен", ["Halloween без костюм", "тикви", "семейни визии"], "Родители и млади хора, които искат лесна Halloween визия без скъп, неудобен костюм.", "Halloween без костюм: тематична тениска с бърза доставка за партито.", "Избери Хелоуин визия", ["Когато нямаш време за костюм, но детето иска да е част от магията — една тениска решава всичко.", "Страшно лесна визия за парти, училище и снимки."], "halloween", "1f2937"),
+      makeOccasion("Ноември", "month", "Ноември", "Black Friday & Подаръци", ["най-продавани", "ранна Коледа", "подаръчни"], "Търсещи подаръци навреме, ловци на добри оферти преди големите коледни лудници.", "Black Friday селекция: най-харесваните дизайни на специална цена. Запаси се за Коледа.", "Разгледай Black Friday", ["Спести стреса и парите преди празниците. Вземи най-търсените подаръци днес.", "Най-добрите подаръци се избират преди опашките и паниката."], "black-friday", "111827"),
+      makeOccasion("Декември", "month", "Декември", "Коледа & Семейство", ["семейни комплекти", "за коледна снимка", "подаръчни"], "Майки, семейства, хора, които търсят matching визия за празниците и незабравими снимки.", "Семеен коледен комплект — специална цена при 3+ тениски за снимката под елхата.", "Създай коледен комплект", ["Коледната снимка не започва с елхата. Започва с усмивките и тениските, които правят всички част от една история.", "Matching визия за семейство, което иска празникът да личи още от снимката."], "christmas", "c81e1e"),
+      ...evergreenDefaults.map(makeEvergreenCategory),
+      makeOccasion("Коледни тениски", "top", "Декември", "Топ кампания", ["Коледа", "семейни комплекти", "подаръци"], "Семейства и купувачи на подаръци, които искат емоционална визия за празниците.", "Семеен коледен комплект — специална цена при 3+ тениски.", "Създай коледен комплект", ["Празничната снимка започва с общата идея. Тениски, които правят всички част от една история.", "Коледен подарък, който влиза директно в снимките и спомените."], "xmas-top", "b91c1c")
+    ];
+
+    const profileDefaults = {
+      teniski: () => initialData,
+      kartini: () => buildProfileData({
+        noun: "картини",
+        productSingular: "картина",
+        evergreenTitle: "Картини за дома и подарък",
+        evergreenTheme: "Вечнозелена арт категория",
+        evergreenTags: ["картини за дома", "арт подарък", "интериор"],
+        evergreenAudience: "Хора, които търсят красив подарък, нов акцент за дома или завършен интериор.",
+        evergreenOffer: "Избери картина за дома — безплатна доставка при поръчка на 2+ артикула.",
+        evergreenCta: "Разгледай картините",
+        evergreenAds: ["Домът се променя с един детайл. Картина, която носи цвят, стил и усещане за завършеност."],
+        slug: "kartini",
+        colors: ["0f766e", "7c3aed", "e35d7c", "169b72", "4f46e5", "e0a019", "f17b2a", "d6961c", "2563eb", "92400e", "111827", "b91c1c"],
+        monthlyThemes: [
+          ["Зимен уют", "картини за уютен дом", "Картина за зимен уют — специална цена за комплект от 2 принта.", "Добави топлина в интериора"],
+          ["Любов и подаръци", "романтичен арт подарък", "Картина за двама — персонално послание към подаръка.", "Избери арт подарък"],
+          ["Пролетен дом", "свежи цветове за дома", "Пролетна селекция — обнови стената с нов арт акцент.", "Освежи дома"],
+          ["Великден и семейство", "празничен декор", "Празнична картина за дома — подарък за семейна трапеза и гости.", "Избери празничен декор"],
+          ["Подарък за учител", "благодарствен подарък", "Картина с послание — подарък, който остава след празника.", "Подари благодарност"],
+          ["Лято и море", "морски картини", "Морска селекция — внеси ваканционно настроение у дома.", "Разгледай морските картини"],
+          ["Пътувания и градове", "градски постери", "Градски арт комплект — 2 картини за любимите места.", "Избери градски арт"],
+          ["Нов сезон у дома", "интериорна промяна", "Обнови стената за новия сезон с картина на специална цена.", "Започни промяната"],
+          ["Офис и работно място", "арт за офис", "Картина за работното място — вдъхновение пред очите всеки ден.", "Обнови офиса"],
+          ["Есенни цветове", "топли тонове", "Есенна селекция — топли цветове за уютни вечери.", "Виж есенните картини"],
+          ["Black Friday арт", "подаръци навреме", "Black Friday картини — избери подаръци преди декемврийския стрес.", "Разгледай офертите"],
+          ["Коледен дом", "коледен подарък", "Коледна арт селекция — картина за дом, който посреща празника.", "Избери коледен подарък"]
+        ]
+      }),
+      ikoni: () => buildProfileData({
+        noun: "икони",
+        productSingular: "икона",
+        evergreenTitle: "Икони за дом и подарък",
+        evergreenTheme: "Вечнозелена духовна категория",
+        evergreenTags: ["икони за дома", "подарък за семейство", "православни икони"],
+        evergreenAudience: "Семейства и хора, които търсят стойностен подарък за дом, празник, имен ден или ново начало.",
+        evergreenOffer: "Икона за дома — подаръчна опаковка и картичка с послание.",
+        evergreenCta: "Разгледай иконите",
+        evergreenAds: ["Подарък, който носи смисъл, спокойствие и място в дома — нещо повече от сезонна покупка."],
+        slug: "ikoni",
+        colors: ["b7791f", "7c2d12", "9f1239", "0f766e", "854d0e", "2563eb", "92400e", "475569", "7c3aed", "1f2937", "111827", "b91c1c"],
+        monthlyThemes: [
+          ["Йордановден и Ивановден", "именни дни през януари", "Икона за имен ден — подарък с послание и дълъг живот.", "Избери икона за имен ден"],
+          ["Семейство и закрила", "подарък за дома", "Икона за дома — символичен подарък за близък човек.", "Подари закрила"],
+          ["Благовещение", "празничен подарък", "Празнична икона с картичка — готов подарък за семейството.", "Избери празнична икона"],
+          ["Великден", "икона за Великден", "Великденска селекция — икона за дом, трапеза и благословен празник.", "Разгледай Великденските икони"],
+          ["Гергьовден и майски празници", "икона за имен ден", "Имен ден през май — подари икона с лично послание.", "Избери подарък за имен ден"],
+          ["Дом и ново начало", "подарък за нов дом", "Икона за нов дом — смислен подарък за начало и спокойствие.", "Подари за нов дом"],
+          ["Семейни поводи", "семеен подарък", "Семейна икона — подарък за годишнина, кръщене или важен ден.", "Избери семеен подарък"],
+          ["Успение Богородично", "августовски празник", "Икона на Богородица — специална селекция за августовските празници.", "Разгледай селекцията"],
+          ["Вяра и учение", "начало на сезона", "Икона за спокойствие и ново начало — подарък за есента.", "Избери икона"],
+          ["Петковден и Димитровден", "есенни именни дни", "Икона за есенен имен ден — подарък с красиво послание.", "Подари за имен ден"],
+          ["Архангеловден", "икона за закрила", "Селекция за Архангеловден — икона за дом и близък човек.", "Виж иконите"],
+          ["Коледа", "коледен духовен подарък", "Коледна икона с подаръчна опаковка — готова за поднасяне.", "Избери коледен подарък"]
+        ]
+      })
+    };
+
+    function makeEvergreenCategory([title, month, tags, audience, offer, cta, strongText, slug, color]) {
+      return makeOccasion(
+        title,
+        "evergreen",
+        month,
+        "Вечнозелена SEO категория",
+        tags,
+        audience,
+        offer,
+        cta,
+        [strongText, `Email идея: представи категорията „${title}“ с офертата „${offer}“ и завърши с CTA: „${cta}“.`, `Ретаргетинг: напомни на хората, които са разглеждали „${title}“, че могат да изберат топ моделите сега.`],
+        slug,
+        color
+      );
+    }
+
+    function buildProfileData(config) {
+      const monthly = config.monthlyThemes.map(([theme, tag, offer, cta], index) =>
+        makeOccasion(
+          MONTHS[index],
+          "month",
+          MONTHS[index],
+          theme,
+          [tag, config.noun, MONTHS[index].toLowerCase()],
+          `Клиенти на сайта за ${config.noun}, които търсят сезонен подарък, декорация или повод за покупка през ${MONTHS[index].toLowerCase()}.`,
+          offer,
+          cta,
+          [
+            `${theme}: ${offer}`,
+            `Създай кампания за ${config.noun} с ясен повод, конкретен подаръчен сценарий и CTA: „${cta}“.`
+          ],
+          `${config.slug}-${index + 1}`,
+          config.colors[index] || "3157d5"
+        )
+      );
+
+      return [
+        ...monthly,
+        makeOccasion(
+          config.evergreenTitle,
+          "evergreen",
+          "Януари",
+          config.evergreenTheme,
+          config.evergreenTags,
+          config.evergreenAudience,
+          config.evergreenOffer,
+          config.evergreenCta,
+          config.evergreenAds,
+          `${config.slug}-evergreen`,
+          config.colors[1] || "3157d5"
+        )
+      ];
+    }
+
+    function buildCustomProfileData(label) {
+      return buildProfileData({
+        noun: label.toLowerCase(),
+        productSingular: label.toLowerCase(),
+        evergreenTitle: `${label} - вечнозелена категория`,
+        evergreenTheme: "Вечнозелена категория",
+        evergreenTags: [label.toLowerCase(), "подарък", "категория"],
+        evergreenAudience: `Клиенти на ${label}, които търсят подходящ продукт, подарък или сезонна идея.`,
+        evergreenOffer: `Основна оферта за ${label}: добави най-силния продукт, полза и ясен CTA.`,
+        evergreenCta: `Разгледай ${label}`,
+        evergreenAds: [`Вечнозелена реклама за ${label}: покажи най-силната причина човек да купи днес.`],
+        slug: createProfileId(label),
+        colors: ["3157d5", "7c3aed", "0f766e", "d63384", "4f46e5", "e0a019", "f17b2a", "d6961c", "2563eb", "92400e", "111827", "b91c1c"],
+        monthlyThemes: MONTHS.map((month) => [
+          `${month} кампания`,
+          `${label.toLowerCase()} ${month.toLowerCase()}`,
+          `${month}: добави сезонна оферта за ${label}.`,
+          `Разгледай ${label}`
+        ])
+      });
+    }
+
+    function makeOccasion(title, type, month, theme, tags, audience, offer, cta, adTexts, slug, color) {
+      return {
+        id: createId(),
+        title,
+        type,
+        month,
+        theme,
+        tags,
+        audience,
+        offer,
+        offerTexts: [offer],
+        cta,
+        categoryImageUrl: sampleImage(title, color),
+        backgroundColor: `#${color}`,
+        products: baseProducts(slug),
+        adTexts,
+        emailHtml: emailTemplate(title, offer, cta),
+        blogPostHtml: blogTemplate(title, offer, cta),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function createId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, (char) =>
+        (Number(char) ^ Math.random() * 16 >> Number(char) / 4).toString(16)
+      );
+    }
+
+    let currentProfile = getSavedProfile();
+    let occasions = loadLocal();
+    let currentFilterType = "all";
+    let editingId = null;
+    let autoSyncTimer = null;
+    let isApplyingRemoteData = false;
+
+    const $ = (id) => document.getElementById(id);
+    const cards = $("cards");
+    const emptyState = $("emptyState");
+    const drawer = $("drawer");
+    const settingsModal = $("settingsModal");
+    const toast = $("toast");
+
+    function getSavedProfile() {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      return SITE_PROFILES[saved] ? saved : "teniski";
+    }
+
+    function storageKey(profile = currentProfile) {
+      return profile === "teniski" ? STORAGE_KEY : `${STORAGE_KEY}_${profile}`;
+    }
+
+    function sectionsKey(profile = currentProfile) {
+      return profile === "teniski" ? SECTIONS_KEY : `${SECTIONS_KEY}_${profile}`;
+    }
+
+    function getInitialData(profile = currentProfile) {
+      if (profileDefaults[profile]) return profileDefaults[profile]().map(normalizeOccasion);
+      const label = SITE_PROFILES[profile]?.label || "Нов сайт";
+      return buildCustomProfileData(label).map(normalizeOccasion);
+    }
+
+    function loadLocal() {
+      const key = storageKey();
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        const normalized = getInitialData();
+        localStorage.setItem(key, JSON.stringify(normalized));
+        return normalized;
+      }
+      try {
+        const saved = JSON.parse(raw).map(normalizeOccasion);
+        const merged = mergeMissingDefaults(saved);
+        if (merged.length !== saved.length || JSON.stringify(merged) !== raw) {
+          localStorage.setItem(key, JSON.stringify(merged));
+        }
+        return merged;
+      } catch {
+        const normalized = getInitialData();
+        localStorage.setItem(key, JSON.stringify(normalized));
+        return normalized;
+      }
+    }
+
+    function mergeMissingDefaults(saved) {
+      const defaults = getInitialData();
+      if (!Array.isArray(saved)) return defaults;
+
+      const existingKeys = new Set(saved.map((item) => defaultKey(item)));
+      const missingDefaults = defaults
+        .filter((item) => item.type === "evergreen")
+        .filter((item) => !existingKeys.has(defaultKey(item)))
+        .map((item) => normalizeOccasion({ ...item, id: createId(), updatedAt: new Date().toISOString() }));
+
+      return [...saved, ...missingDefaults];
+    }
+
+    function normalizeOccasion(item) {
+      const offerTexts = Array.isArray(item.offerTexts) && item.offerTexts.length
+        ? item.offerTexts
+        : item.offer
+          ? [item.offer]
+          : [];
+
+      return {
+        ...item,
+        siteProfile: item.siteProfile || item.site_profile || currentProfile,
+        offer: offerTexts[0] || item.offer || "",
+        offerTexts,
+        galleryUrl: item.galleryUrl || item.gallery_url || "",
+        backgroundColor: item.backgroundColor || item.background_color || "#3157d5",
+        blogPostHtml: item.blogPostHtml || item.blog_post_html || blogTemplate(item.title || "Блог пост", offerTexts[0] || item.offer || "", item.cta || "Разгледай"),
+        campaignStart: item.campaignStart || item.campaign_start || "",
+        campaignEnd: item.campaignEnd || item.campaign_end || "",
+        isEvergreenPeriod: Boolean(item.isEvergreenPeriod ?? item.is_evergreen_period ?? item.type === "evergreen"),
+        products: normalizeProducts(item.products || []),
+        adTexts: Array.isArray(item.adTexts) ? item.adTexts : []
+      };
+    }
+
+    function normalizeProducts(products) {
+      const source = Array.isArray(products) && products.length ? [...products] : [{}, {}, {}];
+      while (source.length < 3) source.push({});
+
+      return source.map((product, index) => {
+        return {
+          name: product.name || `Продукт ${index + 1}`,
+          url: product.url || "",
+          imageUrl: product.imageUrl || product.image_url || ""
+        };
+      });
+    }
+
+    function defaultKey(item) {
+      return `${item.type || ""}::${(item.title || "").trim().toLowerCase()}`;
+    }
+
+    function saveLocal(options = {}) {
+      const { sync = true } = options;
+      localStorage.setItem(storageKey(), JSON.stringify(occasions));
+      render();
+      if (sync) queueAutoSync();
+    }
+
+    function loadEditableSections() {
+      const saved = getEditableSections();
+      document.querySelectorAll("[data-editable-section]").forEach((section) => {
+        const key = section.dataset.editableSection;
+        if (!section.dataset.defaultHtml) section.dataset.defaultHtml = section.innerHTML;
+        section.innerHTML = saved[key] || section.dataset.defaultHtml;
+      });
+    }
+
+    function getEditableSections() {
+      try {
+        return JSON.parse(localStorage.getItem(sectionsKey())) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveEditableSections() {
+      const data = {};
+      document.querySelectorAll("[data-editable-section]").forEach((section) => {
+        data[section.dataset.editableSection] = section.innerHTML;
+      });
+      localStorage.setItem(sectionsKey(), JSON.stringify(data));
+      showToast("Стратегическите секции са запазени.");
+    }
+
+    function scrollToSection(id) {
+      const target = $(id);
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function scrollToMonth(month) {
+      currentFilterType = "all";
+      $("typeFilter").value = "all";
+      $("monthFilter").value = "all";
+      document.querySelectorAll("[data-filter-type]").forEach((node) => node.classList.remove("active"));
+      document.querySelector('[data-filter-type="all"]')?.classList.add("active");
+      render();
+      requestAnimationFrame(() => {
+        const target = [...cards.querySelectorAll(".card")].find((card) => card.dataset.month === month);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function scrollToType(type) {
+      currentFilterType = "all";
+      $("typeFilter").value = "all";
+      $("monthFilter").value = "all";
+      document.querySelectorAll("[data-filter-type]").forEach((node) => node.classList.remove("active"));
+      document.querySelector('[data-filter-type="all"]')?.classList.add("active");
+      render();
+      requestAnimationFrame(() => {
+        const target = [...cards.querySelectorAll(".card")].find((card) => card.dataset.type === type);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function updateProfileUi() {
+      const profile = SITE_PROFILES[currentProfile] || SITE_PROFILES.teniski;
+      document.querySelectorAll("[data-profile]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.profile === currentProfile);
+      });
+      $("profileTitle").textContent = profile.title;
+      $("profileIntro").textContent = profile.intro;
+    }
+
+    function renderProfileButtons() {
+      $("profileSwitcher").innerHTML = `
+        ${Object.entries(SITE_PROFILES).map(([id, profile]) => `
+          <button class="profile-button" data-profile="${escapeHtml(id)}" type="button">${escapeHtml(profile.label)}</button>
+        `).join("")}
+        <button id="addProfileBtn" class="profile-button add-profile" type="button">+ Нов сайт</button>
+      `;
+      document.querySelectorAll("[data-profile]").forEach((button) => {
+        button.addEventListener("click", () => switchProfile(button.dataset.profile));
+      });
+      $("addProfileBtn").addEventListener("click", createNewProfile);
+      updateProfileUi();
+    }
+
+    function createNewProfile() {
+      const label = prompt("Име на новия сайт/проект:");
+      if (!label || !label.trim()) return;
+      const cleanLabel = label.trim();
+      const id = createProfileId(cleanLabel);
+      SITE_PROFILES[id] = {
+        label: cleanLabel.toUpperCase(),
+        title: `Календар & SEO библиотека за ${cleanLabel}`,
+        intro: `Самостоятелен профил за ${cleanLabel} със собствени карти, продукти, рекламни текстове, email HTML и блог постове.`
+      };
+      saveCustomProfiles();
+      currentProfile = id;
+      localStorage.setItem(PROFILE_KEY, currentProfile);
+      occasions = getInitialData(id);
+      saveLocal();
+      resetFilters();
+      loadEditableSections();
+      renderProfileButtons();
+      showToast(`Създаден е профил: ${SITE_PROFILES[id].label}`);
+    }
+
+    function resetFilters() {
+      currentFilterType = "all";
+      $("typeFilter").value = "all";
+      $("monthFilter").value = "all";
+      $("searchInput").value = "";
+      document.querySelectorAll("[data-filter-type]").forEach((node) => node.classList.remove("active"));
+      document.querySelector('[data-filter-type="all"]')?.classList.add("active");
+    }
+
+    function switchProfile(profile) {
+      if (!SITE_PROFILES[profile] || profile === currentProfile) return;
+      currentProfile = profile;
+      localStorage.setItem(PROFILE_KEY, currentProfile);
+      occasions = loadLocal();
+      editingId = null;
+      closeEditor();
+      resetFilters();
+      loadEditableSections();
+      updateProfileUi();
+      render();
+      loadFromSupabase({ silent: true, seedIfEmpty: true });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      showToast(`Профил: ${SITE_PROFILES[currentProfile].label}`);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function escapeHtml(value = "") {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function normalizeForSearch(item) {
+      return [
+        item.title, item.type, item.month, item.theme, item.audience,
+        item.offer, item.cta, ...(item.offerTexts || []), ...(item.tags || []),
+        item.campaignStart, item.campaignEnd, item.isEvergreenPeriod ? "вечнозелена" : "",
+        ...(item.adTexts || []), ...(item.products || []).map((product) => product.name)
+      ].join(" ").toLowerCase();
+    }
+
+    function render() {
+      const search = $("searchInput").value.trim().toLowerCase();
+      const type = $("typeFilter").value;
+      const month = $("monthFilter").value;
+
+      const filtered = occasions.filter((item) => {
+        const matchesSearch = !search || normalizeForSearch(item).includes(search);
+        const matchesType = type === "all" || item.type === type;
+        const matchesSide = currentFilterType === "all" || item.type === currentFilterType;
+        const matchesMonth = month === "all" || item.month === month;
+        return matchesSearch && matchesType && matchesSide && matchesMonth;
+      });
+
+      cards.innerHTML = filtered.map(cardTemplate).join("");
+      emptyState.classList.toggle("show", filtered.length === 0);
+
+      cards.querySelectorAll("[data-edit]").forEach((button) => {
+        button.addEventListener("click", () => openEditor(button.dataset.edit));
+      });
+      cards.querySelectorAll("[data-open-code]").forEach((button) => {
+        button.addEventListener("click", () => openCodeModal(button.dataset.openCode, button.dataset.codeType));
+      });
+      cards.querySelectorAll("[data-product-copy]").forEach((button) => {
+        button.addEventListener("click", () => copyProductField(button.dataset.productCopy, button.dataset.productField));
+      });
+    }
+
+    function cardTemplate(item) {
+      const tags = (item.tags || []).map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join("");
+      const ads = adBlocks(item);
+      const offers = offerBlocks(item);
+      const products = productButtons(item);
+      const gallery = galleryLink(item);
+      const accent = sanitizeColor(item.backgroundColor || "#3157d5");
+      const soft = hexToRgba(accent, 0.11);
+      const muted = hexToRgba(accent, 0.24);
+      const image = item.categoryImageUrl && !isGeneratedPlaceholder(item.categoryImageUrl)
+        ? `<img src="${escapeHtml(item.categoryImageUrl)}" alt="${escapeHtml(item.title)}">`
+        : `<div class="card-image-placeholder">${escapeHtml(item.title)}</div>`;
+      return `
+        <article class="card" data-month="${escapeHtml(item.month || "")}" data-type="${escapeHtml(item.type || "")}" style="--card-accent: ${accent}; --card-soft: ${soft}; --card-muted: ${muted};">
+          <div class="card-image">${image}</div>
+          <div class="card-body">
+            <div class="card-head">
+              <div>
+                <h3>${escapeHtml(item.title)}</h3>
+                <div class="campaign-period">${escapeHtml(campaignPeriodLabel(item))}</div>
+                <div class="text-block">${escapeHtml(item.theme || "")}</div>
+              </div>
+              <span class="badge">${escapeHtml(item.month || item.type)}</span>
+            </div>
+            <div class="chips">${tags}</div>
+            <div class="offer-list">${offers}</div>
+            <div class="text-block"><strong>За кого:</strong> ${escapeHtml(item.audience || "")}</div>
+            <div class="ad-list">${ads}</div>
+            <div class="text-block"><strong>Топ продукти:</strong></div>
+            <div class="product-buttons">${products}</div>
+            <div class="card-actions">
+              <button class="mini-button" data-edit="${item.id}">Редактирай</button>
+              ${gallery}
+              <button class="mini-button" data-open-code="${item.id}" data-code-type="email" type="button">Email HTML</button>
+              <button class="mini-button" data-open-code="${item.id}" data-code-type="blog" type="button">Блог пост</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function offerBlocks(item) {
+      const offers = (item.offerTexts && item.offerTexts.length ? item.offerTexts : [item.offer]).filter(Boolean);
+      return offers.map((offer) => `<div class="offer">${escapeHtml(offer)}</div>`).join("");
+    }
+
+    function campaignPeriodLabel(item) {
+      if (item.isEvergreenPeriod) return "Вечнозелена";
+      if (item.campaignStart && item.campaignEnd) return `${formatDate(item.campaignStart)} - ${formatDate(item.campaignEnd)}`;
+      if (item.campaignStart) return `От ${formatDate(item.campaignStart)}`;
+      if (item.campaignEnd) return `До ${formatDate(item.campaignEnd)}`;
+      return "Период не е зададен";
+    }
+
+    function formatDate(dateValue) {
+      if (!dateValue) return "";
+      const [year, month, day] = dateValue.split("-");
+      return day && month && year ? `${day}.${month}.${year}` : dateValue;
+    }
+
+    function adBlocks(item) {
+      const ads = (item.adTexts || []).filter(Boolean);
+      if (!ads.length) return "";
+      return ads.map((ad, index) => `<div class="ad-copy"><strong>Реклама ${index + 1}:</strong> ${escapeHtml(ad)}</div>`).join("");
+    }
+
+    function productButtons(item) {
+      return normalizeProducts(item.products || [])
+        .map((product, index) => {
+          const label = product.name || `Продукт ${index + 1}`;
+          const image = product.imageUrl
+            ? `<img class="product-thumb" src="${escapeHtml(product.imageUrl)}" alt="${escapeHtml(label)}">`
+            : `<span class="product-thumb"></span>`;
+
+          return `
+            <div class="product-copy-row">
+              ${image}
+              <span>${escapeHtml(label)}</span>
+              <button class="mini-button" data-product-copy="${escapeHtml(item.id)}" data-product-field="url:${index}" type="button">Линк</button>
+              <button class="mini-button" data-product-copy="${escapeHtml(item.id)}" data-product-field="imageUrl:${index}" type="button">Снимка</button>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function galleryLink(item) {
+      if (!item.galleryUrl) return "";
+      return `<a class="gallery-link" href="${escapeHtml(item.galleryUrl)}" target="_blank" rel="noopener noreferrer">Галерия</a>`;
+    }
+
+    function sanitizeColor(color) {
+      return /^#[0-9a-fA-F]{6}$/.test(color || "") ? color : "#3157d5";
+    }
+
+    function hexToRgba(hex, alpha) {
+      const value = sanitizeColor(hex).slice(1);
+      const r = parseInt(value.slice(0, 2), 16);
+      const g = parseInt(value.slice(2, 4), 16);
+      const b = parseInt(value.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function fillMonthSelects() {
+      const options = MONTHS.map((month) => `<option value="${month}">${month}</option>`).join("");
+      $("month").innerHTML = options;
+      $("monthFilter").innerHTML = `<option value="all">Всички</option>${options}`;
+    }
+
+    function openEditor(id) {
+      editingId = id;
+      const item = occasions.find((entry) => entry.id === id) || makeOccasion("Нов повод", "month", "Януари", "", [], "", "", "", ["Примерен рекламен текст."], "new", "3157d5");
+      if (!occasions.some((entry) => entry.id === item.id)) {
+        occasions.unshift(item);
+      }
+
+      $("drawerTitle").textContent = `Редакция: ${item.title}`;
+      $("title").value = item.title || "";
+      $("type").value = item.type || "month";
+      $("month").value = item.month || "Януари";
+      $("campaignStart").value = item.campaignStart || "";
+      $("campaignEnd").value = item.campaignEnd || "";
+      $("isEvergreenPeriod").checked = Boolean(item.isEvergreenPeriod);
+      updatePeriodFieldState();
+      $("theme").value = item.theme || "";
+      $("tags").value = (item.tags || []).join(", ");
+      $("audience").value = item.audience || "";
+      $("cta").value = item.cta || "";
+      $("categoryImageUrl").value = item.categoryImageUrl || "";
+      $("galleryUrl").value = item.galleryUrl || "";
+      $("backgroundColor").value = sanitizeColor(item.backgroundColor || "#3157d5");
+      $("emailHtml").value = item.emailHtml || "";
+      $("blogPostHtml").value = item.blogPostHtml || "";
+      renderOffers(item.offerTexts || (item.offer ? [item.offer] : []));
+      renderProducts(item.products || []);
+      renderAdTexts(item.adTexts || []);
+      renderEmailPreview();
+      drawer.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+    }
+
+    function closeEditor() {
+      drawer.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+      editingId = null;
+    }
+
+    function renderOffers(offers) {
+      const list = offers.length ? offers : [""];
+      $("offers").innerHTML = list.map((offer, index) => `
+        <div class="offer-row">
+          <div class="field">
+            <label>Офертен текст ${index + 1}</label>
+            <textarea data-offer-text="${index}" placeholder="Напр. Зимен комплект: вземи 2 тениски за планина и получи безплатна доставка.">${escapeHtml(offer)}</textarea>
+          </div>
+          <button type="button" class="mini-button" data-remove-offer="${index}">Премахни</button>
+        </div>
+      `).join("");
+
+      $("offers").querySelectorAll("[data-remove-offer]").forEach((button) => {
+        button.addEventListener("click", () => {
+          button.closest(".offer-row").remove();
+        });
+      });
+    }
+
+    function renderProducts(products) {
+      const normalized = normalizeProducts(products);
+      $("products").innerHTML = normalized.map((product, index) => `
+        <div class="product-row">
+          <div class="product-preview-cell">
+            <label>Продукт ${index + 1}</label>
+            ${product.imageUrl ? `<img class="product-editor-thumb" data-product-preview="${index}" src="${escapeHtml(product.imageUrl)}" alt="Преглед продукт ${index + 1}">` : `<span class="product-editor-thumb" data-product-preview="${index}"></span>`}
+          </div>
+          <div class="field">
+            <label>Име</label>
+            <input data-product-name="${index}" value="${escapeHtml(product.name || "")}" placeholder="Коледна тениска с Гринч">
+          </div>
+          <div class="field">
+            <label>Линк продукт</label>
+            <input data-product-url="${index}" value="${escapeHtml(product.url || "")}" placeholder="https://...">
+          </div>
+          <div class="field">
+            <label>Линк снимка</label>
+            <input data-product-image-url="${index}" value="${escapeHtml(product.imageUrl || "")}" placeholder="https://...jpg">
+          </div>
+          <button type="button" class="mini-button" data-open-url="${index}">Отвори</button>
+          <button type="button" class="mini-button" data-remove-product="${index}">Премахни</button>
+        </div>
+      `).join("");
+
+      $("products").querySelectorAll("[data-open-url]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const index = button.dataset.openUrl;
+          const url = document.querySelector(`[data-product-url="${index}"]`).value;
+          if (url) window.open(url, "_blank", "noopener,noreferrer");
+        });
+      });
+      $("products").querySelectorAll("[data-product-image-url]").forEach((input) => {
+        input.addEventListener("input", () => {
+          const preview = document.querySelector(`[data-product-preview="${input.dataset.productImageUrl}"]`);
+          if (!preview) return;
+          const value = input.value.trim();
+          if (value && preview.tagName === "IMG") {
+            preview.src = value;
+          } else if (value) {
+            const img = document.createElement("img");
+            img.className = "product-editor-thumb";
+            img.dataset.productPreview = input.dataset.productImageUrl;
+            img.src = value;
+            img.alt = `Преглед продукт ${Number(input.dataset.productImageUrl) + 1}`;
+            preview.replaceWith(img);
+          } else if (preview.tagName === "IMG") {
+            const span = document.createElement("span");
+            span.className = "product-editor-thumb";
+            span.dataset.productPreview = input.dataset.productImageUrl;
+            preview.replaceWith(span);
+          }
+        });
+      });
+      $("products").querySelectorAll("[data-remove-product]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const current = collectProductsFromEditor();
+          current.splice(Number(button.dataset.removeProduct), 1);
+          renderProducts(current);
+        });
+      });
+    }
+
+    function renderAdTexts(texts) {
+      const list = texts.length ? texts : [""];
+      $("adTexts").innerHTML = list.map((text, index) => `
+        <div class="ad-row">
+          <div class="field">
+            <label>Рекламен текст ${index + 1}</label>
+            <textarea data-ad-text="${index}">${escapeHtml(text)}</textarea>
+          </div>
+          <button type="button" class="mini-button" data-remove-ad="${index}">Премахни</button>
+        </div>
+      `).join("");
+
+      $("adTexts").querySelectorAll("[data-remove-ad]").forEach((button) => {
+        button.addEventListener("click", () => {
+          button.closest(".ad-row").remove();
+        });
+      });
+    }
+
+    function collectProductsFromEditor() {
+      return [...document.querySelectorAll("[data-product-name]")]
+        .map((input) => {
+          const index = input.dataset.productName;
+          return {
+            name: input.value.trim() || `Продукт ${Number(index) + 1}`,
+            url: document.querySelector(`[data-product-url="${index}"]`)?.value.trim() || "",
+            imageUrl: document.querySelector(`[data-product-image-url="${index}"]`)?.value.trim() || ""
+          };
+        })
+        .filter((product, index) => index < 3 || product.name || product.url || product.imageUrl);
+    }
+
+    function addProductRow() {
+      const current = collectProductsFromEditor();
+      current.push({ name: `Продукт ${current.length + 1}`, url: "", imageUrl: "" });
+      renderProducts(current);
+    }
+
+    function updatePeriodFieldState() {
+      const disabled = $("isEvergreenPeriod").checked;
+      $("campaignStart").disabled = disabled;
+      $("campaignEnd").disabled = disabled;
+      if (disabled) {
+        $("campaignStart").value = "";
+        $("campaignEnd").value = "";
+      }
+    }
+
+    function collectForm() {
+      const products = collectProductsFromEditor();
+
+      const offerTexts = [...document.querySelectorAll("[data-offer-text]")]
+        .map((input) => input.value.trim())
+        .filter(Boolean);
+
+      const adTexts = [...document.querySelectorAll("[data-ad-text]")]
+        .map((input) => input.value.trim())
+        .filter(Boolean);
+
+      return {
+        id: editingId || createId(),
+        title: $("title").value.trim(),
+        type: $("type").value,
+        month: $("month").value,
+        campaignStart: $("isEvergreenPeriod").checked ? "" : $("campaignStart").value,
+        campaignEnd: $("isEvergreenPeriod").checked ? "" : $("campaignEnd").value,
+        isEvergreenPeriod: $("isEvergreenPeriod").checked,
+        theme: $("theme").value.trim(),
+        tags: $("tags").value.split(",").map((tag) => tag.trim()).filter(Boolean),
+        audience: $("audience").value.trim(),
+        offer: offerTexts[0] || "",
+        offerTexts,
+        cta: $("cta").value.trim(),
+        categoryImageUrl: $("categoryImageUrl").value.trim(),
+        galleryUrl: $("galleryUrl").value.trim(),
+        backgroundColor: $("backgroundColor").value || "#3157d5",
+        products,
+        adTexts,
+        emailHtml: $("emailHtml").value.trim(),
+        blogPostHtml: $("blogPostHtml").value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function saveCurrent(event) {
+      event?.preventDefault();
+      const item = collectForm();
+      const index = occasions.findIndex((entry) => entry.id === item.id);
+      if (index >= 0) occasions[index] = item;
+      else occasions.unshift(item);
+      saveLocal();
+      showToast("Запазено локално.");
+      openEditor(item.id);
+    }
+
+    function deleteCurrent() {
+      if (!editingId) return;
+      if (!confirm("Да изтрия ли този повод?")) return;
+      occasions = occasions.filter((entry) => entry.id !== editingId);
+      saveLocal();
+      closeEditor();
+      showToast("Поводът е изтрит.");
+    }
+
+    function duplicateCurrent() {
+      const item = collectForm();
+      const copy = {
+        ...item,
+        id: createId(),
+        title: `${item.title} копие`,
+        updatedAt: new Date().toISOString()
+      };
+      occasions.unshift(copy);
+      saveLocal();
+      openEditor(copy.id);
+      showToast("Създадено е копие.");
+    }
+
+    function renderEmailPreview() {
+      $("emailPreview").innerHTML = $("emailHtml").value || "<em>Няма HTML код за преглед.</em>";
+    }
+
+    let currentCodeModalText = "";
+
+    function openCodeModal(id, type) {
+      const item = occasions.find((entry) => entry.id === id);
+      if (!item) return;
+      currentCodeModalText = type === "blog" ? item.blogPostHtml || "" : item.emailHtml || "";
+      $("codeModalTitle").textContent = type === "blog" ? "Блог пост за WordPress" : "Email HTML код";
+      $("codeModalOutput").value = currentCodeModalText;
+      $("codeModal").classList.add("open");
+      $("codeModal").setAttribute("aria-hidden", "false");
+      $("codeModalOutput").focus();
+      $("codeModalOutput").select();
+    }
+
+    function closeCodeModal() {
+      $("codeModal").classList.remove("open");
+      $("codeModal").setAttribute("aria-hidden", "true");
+    }
+
+    async function copyCodeModal() {
+      await navigator.clipboard.writeText($("codeModalOutput").value || currentCodeModalText || "");
+      showToast("Съдържанието е копирано.");
+    }
+
+    async function copyProductField(id, fieldDescriptor) {
+      const item = occasions.find((entry) => entry.id === id);
+      if (!item || !fieldDescriptor) return;
+      const [field, rawIndex] = fieldDescriptor.split(":");
+      const index = Number(rawIndex);
+      const product = normalizeProducts(item.products || [])[index];
+      const value = product?.[field] || "";
+
+      if (!value) {
+        showToast(field === "imageUrl" ? "Няма добавен линк за снимка." : "Няма добавен продуктов линк.");
+        return;
+      }
+
+      await navigator.clipboard.writeText(value);
+      showToast(field === "imageUrl" ? "Линкът към снимката е копиран." : "Продуктовият линк е копиран.");
+    }
+
+    function getSettings() {
+      try {
+        return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveSettings() {
+      const settings = {
+        url: $("supabaseUrl").value.trim(),
+        key: $("supabaseKey").value.trim()
+      };
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      updateSyncStatus();
+      settingsModal.classList.remove("open");
+      showToast("Supabase настройките са запазени. Авто синхронизацията е включена.");
+      loadFromSupabase({ silent: true, seedIfEmpty: true });
+    }
+
+    function supabaseClient() {
+      const settings = getSettings();
+      if (!settings.url || !settings.key || !window.supabase) return null;
+      return window.supabase.createClient(settings.url, settings.key);
+    }
+
+    function updateSyncStatus() {
+      const hasSettings = Boolean(getSettings().url && getSettings().key);
+      $("syncDot").classList.toggle("online", hasSettings);
+      $("syncText").textContent = hasSettings ? "Авто Supabase" : "Локален режим";
+    }
+
+    function queueAutoSync() {
+      if (isApplyingRemoteData || !supabaseClient()) return;
+      window.clearTimeout(autoSyncTimer);
+      autoSyncTimer = window.setTimeout(() => {
+        syncToSupabase({ silent: true });
+      }, 800);
+    }
+
+    function toDbRow(item) {
+      return {
+        id: item.id,
+        site_profile: currentProfile,
+        title: item.title,
+        type: item.type,
+        month: item.month,
+        campaign_start: item.campaignStart || null,
+        campaign_end: item.campaignEnd || null,
+        is_evergreen_period: Boolean(item.isEvergreenPeriod),
+        theme: item.theme,
+        tags: item.tags || [],
+        audience: item.audience,
+        offer: item.offer,
+        offer_texts: item.offerTexts || [],
+        cta: item.cta,
+        category_image_url: item.categoryImageUrl,
+        gallery_url: item.galleryUrl || "",
+        background_color: item.backgroundColor || "#3157d5",
+        products: item.products || [],
+        ad_texts: item.adTexts || [],
+        email_html: item.emailHtml || "",
+        blog_post_html: item.blogPostHtml || "",
+        updated_at: item.updatedAt || new Date().toISOString()
+      };
+    }
+
+    function fromDbRow(row) {
+      return {
+        id: row.id,
+        siteProfile: row.site_profile || "teniski",
+        title: row.title,
+        type: row.type,
+        month: row.month,
+        campaignStart: row.campaign_start,
+        campaignEnd: row.campaign_end,
+        isEvergreenPeriod: row.is_evergreen_period,
+        theme: row.theme,
+        tags: row.tags || [],
+        audience: row.audience,
+        offer: row.offer,
+        offerTexts: row.offer_texts || [],
+        cta: row.cta,
+        categoryImageUrl: row.category_image_url,
+        galleryUrl: row.gallery_url,
+        backgroundColor: row.background_color,
+        products: row.products || [],
+        adTexts: row.ad_texts || [],
+        emailHtml: row.email_html || "",
+        blogPostHtml: row.blog_post_html || "",
+        updatedAt: row.updated_at
+      };
+    }
+
+    function profileRows() {
+      return Object.entries(SITE_PROFILES).map(([id, profile]) => ({
+        id,
+        label: profile.label,
+        title: profile.title,
+        intro: profile.intro,
+        updated_at: new Date().toISOString()
+      }));
+    }
+
+    function applyProfileRows(rows = []) {
+      rows.forEach((row) => {
+        if (!row?.id || !row?.label) return;
+        SITE_PROFILES[row.id] = {
+          label: row.label,
+          title: row.title || `Календар & SEO библиотека за ${row.label}`,
+          intro: row.intro || `Самостоятелен профил за ${row.label}.`
+        };
+      });
+      saveCustomProfiles();
+      if (!SITE_PROFILES[currentProfile]) {
+        currentProfile = "teniski";
+        localStorage.setItem(PROFILE_KEY, currentProfile);
+      }
+      renderProfileButtons();
+    }
+
+    async function syncToSupabase(options = {}) {
+      const { silent = false } = options;
+      const client = supabaseClient();
+      if (!client) {
+        if (!silent) {
+          settingsModal.classList.add("open");
+          showToast("Добави Supabase URL и public key.");
+        }
+        return;
+      }
+      const { error: profileError } = await client.from(PROFILE_TABLE_NAME).upsert(profileRows(), { onConflict: "id" });
+      if (profileError) {
+        showToast(`Supabase профили: ${profileError.message}`);
+        return;
+      }
+      const { error } = await client.from(TABLE_NAME).upsert(occasions.map(toDbRow), { onConflict: "id" });
+      if (error) {
+        showToast(`Supabase грешка: ${error.message}`);
+        return;
+      }
+      if (!silent) showToast("Профилите и картите са записани в Supabase.");
+    }
+
+    async function loadFromSupabase(options = {}) {
+      const { silent = false, seedIfEmpty = false } = options;
+      const client = supabaseClient();
+      if (!client) {
+        if (!silent) {
+          settingsModal.classList.add("open");
+          showToast("Добави Supabase URL и public key.");
+        }
+        return;
+      }
+      const { data: profiles, error: profileError } = await client.from(PROFILE_TABLE_NAME).select("*").order("updated_at", { ascending: false });
+      if (profileError) {
+        showToast(`Supabase профили: ${profileError.message}`);
+        return;
+      }
+      applyProfileRows(profiles || []);
+      const { data, error } = await client.from(TABLE_NAME).select("*").eq("site_profile", currentProfile).order("updated_at", { ascending: false });
+      if (error) {
+        showToast(`Supabase грешка: ${error.message}`);
+        return;
+      }
+      if (data?.length) {
+        isApplyingRemoteData = true;
+        occasions = data.map(fromDbRow).map(normalizeOccasion);
+        saveLocal({ sync: false });
+        isApplyingRemoteData = false;
+        if (!silent) showToast("Данните са заредени от Supabase.");
+      } else if (seedIfEmpty) {
+        await syncToSupabase({ silent: true });
+        if (!silent) showToast("Supabase беше празен и текущите данни са записани.");
+      } else if (!silent) {
+        showToast("Няма данни в Supabase за този профил.");
+      }
+    }
+
+    function exportJson() {
+      const blob = new Blob([JSON.stringify(occasions, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${currentProfile}-marketing-calendar.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJson(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (!Array.isArray(data)) throw new Error("Invalid JSON");
+          occasions = data.map(normalizeOccasion);
+          saveLocal();
+          showToast("JSON данните са импортирани.");
+        } catch {
+          showToast("Файлът не е валиден JSON списък.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function bindEvents() {
+      $("newBtn").addEventListener("click", () => openEditor(null));
+      $("newBtnTop").addEventListener("click", () => openEditor(null));
+      $("saveSectionsBtn").addEventListener("click", saveEditableSections);
+      $("closeDrawerBtn").addEventListener("click", closeEditor);
+      $("saveBtn").addEventListener("click", saveCurrent);
+      $("editForm").addEventListener("submit", saveCurrent);
+      $("deleteBtn").addEventListener("click", deleteCurrent);
+      $("duplicateBtn").addEventListener("click", duplicateCurrent);
+      $("addProductBtn").addEventListener("click", addProductRow);
+      $("isEvergreenPeriod").addEventListener("change", () => {
+        updatePeriodFieldState();
+      });
+      $("addOfferBtn").addEventListener("click", () => {
+        const current = [...document.querySelectorAll("[data-offer-text]")].map((input) => input.value);
+        current.push("");
+        renderOffers(current);
+      });
+      $("addAdTextBtn").addEventListener("click", () => {
+        const current = [...document.querySelectorAll("[data-ad-text]")].map((input) => input.value);
+        current.push("");
+        renderAdTexts(current);
+      });
+      $("emailHtml").addEventListener("input", renderEmailPreview);
+      $("searchInput").addEventListener("input", render);
+      $("typeFilter").addEventListener("change", render);
+      $("monthFilter").addEventListener("change", render);
+      $("settingsBtn").addEventListener("click", () => {
+        const settings = getSettings();
+        $("supabaseUrl").value = settings.url || "";
+        $("supabaseKey").value = settings.key || "";
+        settingsModal.classList.add("open");
+      });
+      $("closeSettingsBtn").addEventListener("click", () => settingsModal.classList.remove("open"));
+      $("saveSettingsBtn").addEventListener("click", saveSettings);
+      $("closeCodeModalBtn").addEventListener("click", closeCodeModal);
+      $("copyCodeModalBtn").addEventListener("click", copyCodeModal);
+      $("backToTopBtn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+      $("exportBtn").addEventListener("click", exportJson);
+      $("importBtn").addEventListener("click", () => $("importFile").click());
+      $("importFile").addEventListener("change", (event) => importJson(event.target.files[0]));
+      $("resetBtn").addEventListener("click", () => {
+        if (!confirm("Да върна ли примерните данни? Това ще замени локалните промени.")) return;
+        occasions = getInitialData().map((item) => ({ ...item, id: createId(), updatedAt: new Date().toISOString() }));
+        saveLocal();
+        showToast("Примерните данни са върнати.");
+      });
+
+      document.querySelectorAll("[data-filter-type]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll("[data-filter-type]").forEach((node) => node.classList.remove("active"));
+          button.classList.add("active");
+          currentFilterType = button.dataset.filterType;
+          $("typeFilter").value = "all";
+          render();
+        });
+      });
+
+      document.querySelectorAll("[data-scroll-target]").forEach((button) => {
+        button.addEventListener("click", () => scrollToSection(button.dataset.scrollTarget));
+      });
+
+      document.querySelectorAll("[data-type-target]").forEach((button) => {
+        button.addEventListener("click", () => scrollToType(button.dataset.typeTarget));
+      });
+
+      document.querySelectorAll("[data-month-target]").forEach((button) => {
+        button.addEventListener("click", () => scrollToMonth(button.dataset.monthTarget));
+      });
+    }
+
+    async function initApp() {
+      fillMonthSelects();
+      renderProfileButtons();
+      bindEvents();
+      loadEditableSections();
+      updateProfileUi();
+      updateSyncStatus();
+      render();
+      await loadFromSupabase({ silent: true, seedIfEmpty: true });
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
