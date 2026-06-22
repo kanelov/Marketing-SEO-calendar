@@ -416,6 +416,19 @@
       line-height: 1.25;
     }
 
+    .month-campaign strong {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .month-campaign span {
+      display: block;
+      margin-top: 2px;
+      color: #657084;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
     .month-campaign:hover {
       background: var(--brand-soft);
       border-color: #b9c8ff;
@@ -523,6 +536,28 @@
       background: var(--panel);
       box-shadow: 0 1px 0 rgba(21, 32, 51, .03);
       overflow: hidden;
+    }
+
+    .card:nth-child(even) {
+      border-color: #dbe3f0;
+      background: #f8faff;
+      box-shadow: 0 1px 0 rgba(21, 32, 51, .04);
+    }
+
+    .card:nth-child(odd) .card-body {
+      background: #fff;
+    }
+
+    .card:nth-child(even) .card-body {
+      background: linear-gradient(180deg, #fcfdff 0%, #f6f8fd 100%);
+    }
+
+    .card:nth-child(even) .product-copy-row {
+      background: rgba(255, 255, 255, .78);
+    }
+
+    .card:nth-child(even) .mini-button {
+      background: #edf2f8;
     }
 
     .card-image {
@@ -2076,12 +2111,13 @@
       const search = $("searchInput").value.trim().toLowerCase();
       const type = $("typeFilter").value;
       const month = $("monthFilter").value;
+      const selectedMonthIndex = monthIndex(month);
 
       const filtered = occasions.filter((item) => {
         const matchesSearch = !search || normalizeForSearch(item).includes(search);
         const matchesType = type === "all" || item.type === type;
         const matchesSide = currentFilterType === "all" || item.type === currentFilterType;
-        const matchesMonth = month === "all" || item.month === month;
+        const matchesMonth = month === "all" || campaignAppearsInMonth(item, selectedMonthIndex);
         return matchesSearch && matchesType && matchesSide && matchesMonth;
       });
 
@@ -2113,9 +2149,76 @@
       return MONTHS.indexOf(month);
     }
 
+    function monthDistanceByIndex(index, fromIndex = new Date().getMonth()) {
+      return index < 0 ? 99 : (index - fromIndex + 12) % 12;
+    }
+
     function monthDistance(month, fromIndex = new Date().getMonth()) {
       const index = monthIndex(month);
-      return index < 0 ? 99 : (index - fromIndex + 12) % 12;
+      return monthDistanceByIndex(index, fromIndex);
+    }
+
+    function parseCampaignDate(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return null;
+      const [year, month, day] = value.split("-").map(Number);
+      const date = new Date(year, month - 1, day);
+      if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== month - 1 ||
+        date.getDate() !== day
+      ) {
+        return null;
+      }
+      return date;
+    }
+
+    function campaignMonthIndexes(item) {
+      const fallbackMonth = monthIndex(item.month);
+      const fallback = fallbackMonth >= 0 ? [fallbackMonth] : [];
+      if (item.isEvergreenPeriod) return fallback;
+
+      const start = parseCampaignDate(item.campaignStart);
+      const end = parseCampaignDate(item.campaignEnd);
+      if (!start && !end) return fallback;
+      if (!start || !end) return [(start || end).getMonth()];
+
+      const from = start <= end ? start : end;
+      const to = start <= end ? end : start;
+      const totalMonths = (to.getFullYear() - from.getFullYear()) * 12 + to.getMonth() - from.getMonth() + 1;
+      if (totalMonths >= 12) return MONTHS.map((_, index) => index);
+
+      const months = [];
+      const cursor = new Date(from.getFullYear(), from.getMonth(), 1);
+      const last = new Date(to.getFullYear(), to.getMonth(), 1);
+      while (cursor <= last) {
+        months.push(cursor.getMonth());
+        cursor.setMonth(cursor.getMonth() + 1);
+      }
+      return [...new Set(months)];
+    }
+
+    function primaryCampaignMonthIndex(item, fromIndex = new Date().getMonth()) {
+      return campaignMonthIndexes(item)
+        .sort((a, b) => monthDistanceByIndex(a, fromIndex) - monthDistanceByIndex(b, fromIndex))[0] ?? -1;
+    }
+
+    function campaignAppearsInMonth(item, monthIndexValue) {
+      return campaignMonthIndexes(item).includes(monthIndexValue);
+    }
+
+    function campaignMonthsLabel(item) {
+      const months = campaignMonthIndexes(item);
+      if (!months.length) return item.month || "";
+      if (months.length === 12) return "Цяла година";
+      if (months.length === 1) return MONTHS[months[0]];
+      return `${MONTHS[months[0]]} - ${MONTHS[months[months.length - 1]]}`;
+    }
+
+    function campaignPlanningCaption(item) {
+      if (!item.isEvergreenPeriod && (parseCampaignDate(item.campaignStart) || parseCampaignDate(item.campaignEnd))) {
+        return campaignPeriodLabel(item);
+      }
+      return item.theme || typeLabel(item.type);
     }
 
     function typeLabel(type) {
@@ -2127,10 +2230,12 @@
     }
 
     function upcomingItems(limit = 6) {
+      const currentMonth = new Date().getMonth();
       return [...occasions]
-        .filter((item) => monthIndex(item.month) >= 0)
+        .filter((item) => primaryCampaignMonthIndex(item, currentMonth) >= 0)
         .sort((a, b) => {
-          const byMonth = monthDistance(a.month) - monthDistance(b.month);
+          const byMonth = monthDistanceByIndex(primaryCampaignMonthIndex(a, currentMonth), currentMonth) -
+            monthDistanceByIndex(primaryCampaignMonthIndex(b, currentMonth), currentMonth);
           if (byMonth) return byMonth;
           const typeRank = { top: 0, month: 1, evergreen: 2 };
           return (typeRank[a.type] ?? 9) - (typeRank[b.type] ?? 9) || String(a.title).localeCompare(String(b.title));
@@ -2142,7 +2247,7 @@
       const list = $("upcomingList");
       const items = upcomingItems();
       if (!items.length) {
-        list.innerHTML = `<div class="empty show">Няма кампании с месец. Добави месец към поводите, за да се покажат тук.</div>`;
+        list.innerHTML = `<div class="empty show">Няма кампании с месец или период. Добави период към поводите, за да се покажат тук.</div>`;
         return;
       }
 
@@ -2152,7 +2257,7 @@
         const muted = hexToRgba(accent, 0.24);
         return `
           <button class="upcoming-item" data-planning-edit="${escapeHtml(item.id)}" style="--card-accent: ${accent}; --card-soft: ${soft}; --card-muted: ${muted};" type="button">
-            <span class="upcoming-meta">${escapeHtml(item.month || "")} · ${escapeHtml(typeLabel(item.type))}</span>
+            <span class="upcoming-meta">${escapeHtml(campaignMonthsLabel(item))} · ${escapeHtml(typeLabel(item.type))}</span>
             <strong>${escapeHtml(item.title || "")}</strong>
             <span>${escapeHtml(item.theme || campaignPeriodLabel(item))}</span>
           </button>
@@ -2222,19 +2327,29 @@
       showToast("Темата е добавена.");
     }
 
+    function monthCampaignButton(item) {
+      const caption = campaignPlanningCaption(item);
+      return `
+        <button class="month-campaign" data-planning-edit="${escapeHtml(item.id)}" title="${escapeHtml(campaignPeriodLabel(item))}" type="button">
+          <strong>${escapeHtml(item.title)}</strong>
+          ${caption ? `<span>${escapeHtml(caption)}</span>` : ""}
+        </button>
+      `;
+    }
+
     function renderYearCalendar() {
       const calendar = $("yearCalendar");
       const currentMonth = new Date().getMonth();
       calendar.innerHTML = MONTHS.map((month, index) => {
         const items = occasions
-          .filter((item) => item.month === month)
-          .sort((a, b) => String(a.title).localeCompare(String(b.title)));
+          .filter((item) => campaignAppearsInMonth(item, index))
+          .sort((a, b) => campaignPeriodSortValue(a) - campaignPeriodSortValue(b) || String(a.title).localeCompare(String(b.title)));
         const visible = items.slice(0, 5);
         return `
           <article class="month-bucket ${index === currentMonth ? "current" : ""}">
             <h4>${escapeHtml(month)} <span class="month-count">${items.length}</span></h4>
             <div class="month-campaigns">
-              ${visible.map((item) => `<button class="month-campaign" data-planning-edit="${escapeHtml(item.id)}" type="button">${escapeHtml(item.title)}</button>`).join("")}
+              ${visible.map(monthCampaignButton).join("")}
               ${items.length > visible.length ? `<span class="month-more">+ още ${items.length - visible.length}</span>` : ""}
             </div>
           </article>
@@ -2244,6 +2359,15 @@
       calendar.querySelectorAll("[data-planning-edit]").forEach((button) => {
         button.addEventListener("click", () => openEditor(button.dataset.planningEdit));
       });
+    }
+
+    function campaignPeriodSortValue(item) {
+      const start = parseCampaignDate(item.campaignStart);
+      const end = parseCampaignDate(item.campaignEnd);
+      const fallbackMonth = monthIndex(item.month);
+      if (start) return start.getTime();
+      if (end) return end.getTime();
+      return fallbackMonth >= 0 ? fallbackMonth * 32 : 999;
     }
 
     function cardTemplate(item) {
