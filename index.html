@@ -719,6 +719,36 @@
       justify-items: start;
     }
 
+    .upload-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .asset-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .asset-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 8px;
+      align-items: center;
+      padding: 9px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .asset-row a {
+      color: #263553;
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
     .gallery-link {
       display: inline-flex;
       width: fit-content;
@@ -919,7 +949,7 @@
     .offer-row,
     .ad-row {
       display: grid;
-      grid-template-columns: 72px minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr) auto auto;
+      grid-template-columns: 72px minmax(0, .75fr) minmax(0, 1fr) minmax(0, 1fr) repeat(4, auto);
       gap: 10px;
       align-items: start;
     }
@@ -1060,10 +1090,12 @@
       .planning-grid { grid-template-columns: 1fr; }
       .theme-add-row { grid-template-columns: 1fr; }
       .year-calendar { grid-template-columns: 1fr; }
+      .upload-row { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
       .product-row { grid-template-columns: 1fr; }
       .offer-row { grid-template-columns: 1fr; }
       .ad-row { grid-template-columns: 1fr; }
+      .asset-row { grid-template-columns: 1fr; }
       .backup-row { grid-template-columns: 1fr; }
       .strategy-grid,
       .copy-grid,
@@ -1310,7 +1342,11 @@
         </div>
         <div class="field wide">
           <label for="categoryImageUrl">Линк за снимка на категория</label>
-          <input id="categoryImageUrl" placeholder="https://...">
+          <div class="upload-row">
+            <input id="categoryImageUrl" placeholder="https://...">
+            <button id="uploadCategoryImageBtn" class="ghost" type="button">Качи снимка</button>
+          </div>
+          <input id="categoryImageUpload" type="file" accept="image/*" hidden>
         </div>
         <div class="field wide">
           <label for="galleryUrl">Линк за галерия</label>
@@ -1332,6 +1368,14 @@
         <h4>Топ продукти</h4>
         <div id="products"></div>
         <button type="button" id="addProductBtn" class="ghost">+ Добави продукт</button>
+      </div>
+
+      <div class="section-box">
+        <h4>Снимки и файлове</h4>
+        <div class="notice">Качи допълнителни криейтиви, PDF, видео или снимки към тази кампания. Линковете се пазят в картата и в Supabase backup.</div>
+        <div id="assetUrls" class="asset-list"></div>
+        <button type="button" id="uploadAssetsBtn" class="ghost">+ Качи файлове</button>
+        <input id="assetUpload" type="file" accept="image/*,application/pdf,video/mp4" multiple hidden>
       </div>
 
       <div class="section-box">
@@ -1427,6 +1471,7 @@
     const TABLE_NAME = "marketing_occasions";
     const PROFILE_TABLE_NAME = "marketing_profiles";
     const BACKUP_TABLE_NAME = "marketing_backups";
+    const STORAGE_BUCKET_NAME = "marketing-assets";
     const MONTHS = ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"];
     const POPULAR_THEME_DEFAULTS = [
       "Коледа", "Black Friday", "Лято", "8 март", "Свети Валентин", "Хелоуин",
@@ -1840,6 +1885,7 @@
         offer: offerTexts[0] || item.offer || "",
         offerTexts,
         galleryUrl: item.galleryUrl || item.gallery_url || "",
+        assetUrls: Array.isArray(item.assetUrls) ? item.assetUrls : (Array.isArray(item.asset_urls) ? item.asset_urls : []),
         backgroundColor: item.backgroundColor || item.background_color || "#3157d5",
         blogPostHtml: item.blogPostHtml || item.blog_post_html || blogTemplate(item.title || "Блог пост", offerTexts[0] || item.offer || "", item.cta || "Разгледай"),
         campaignStart: item.campaignStart || item.campaign_start || "",
@@ -2022,7 +2068,7 @@
         item.title, item.type, item.month, item.theme, item.audience,
         item.offer, item.cta, ...(item.offerTexts || []), ...(item.tags || []),
         item.campaignStart, item.campaignEnd, item.isEvergreenPeriod ? "вечнозелена" : "",
-        ...(item.adTexts || []), ...(item.products || []).map((product) => product.name)
+        ...(item.adTexts || []), ...(item.assetUrls || []), ...(item.products || []).map((product) => product.name)
       ].join(" ").toLowerCase();
     }
 
@@ -2206,6 +2252,7 @@
       const offers = offerBlocks(item);
       const products = productButtons(item);
       const gallery = galleryLink(item);
+      const assets = assetLinks(item);
       const accent = sanitizeColor(item.backgroundColor || "#3157d5");
       const soft = hexToRgba(accent, 0.11);
       const muted = hexToRgba(accent, 0.24);
@@ -2233,6 +2280,7 @@
             <div class="card-actions">
               <button class="mini-button" data-edit="${item.id}">Редактирай</button>
               ${gallery}
+              ${assets}
               <button class="mini-button" data-open-code="${item.id}" data-code-type="email" type="button">Email HTML</button>
               <button class="mini-button" data-open-code="${item.id}" data-code-type="blog" type="button">Блог пост</button>
             </div>
@@ -2291,6 +2339,14 @@
       return `<a class="gallery-link" href="${escapeHtml(item.galleryUrl)}" target="_blank" rel="noopener noreferrer">Галерия</a>`;
     }
 
+    function assetLinks(item) {
+      const assets = Array.isArray(item.assetUrls) ? item.assetUrls.filter(Boolean) : [];
+      return assets
+        .slice(0, 3)
+        .map((url, index) => `<a class="gallery-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Файл ${index + 1}</a>`)
+        .join("");
+    }
+
     function sanitizeColor(color) {
       return /^#[0-9a-fA-F]{6}$/.test(color || "") ? color : "#3157d5";
     }
@@ -2335,6 +2391,7 @@
       $("blogPostHtml").value = item.blogPostHtml || "";
       renderOffers(item.offerTexts || (item.offer ? [item.offer] : []));
       renderProducts(item.products || []);
+      renderAssetUrls(item.assetUrls || []);
       renderAdTexts(item.adTexts || []);
       renderEmailPreview();
       drawer.classList.add("open");
@@ -2387,6 +2444,8 @@
             <input data-product-image-url="${index}" value="${escapeHtml(product.imageUrl || "")}" placeholder="https://...jpg">
           </div>
           <button type="button" class="mini-button" data-open-url="${index}">Отвори</button>
+          <button type="button" class="mini-button" data-upload-product-image="${index}">Качи снимка</button>
+          <input data-product-file="${index}" type="file" accept="image/*" hidden>
           <button type="button" class="mini-button" data-remove-product="${index}">Премахни</button>
         </div>
       `).join("");
@@ -2427,6 +2486,137 @@
           renderProducts(current);
         });
       });
+      $("products").querySelectorAll("[data-upload-product-image]").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelector(`[data-product-file="${button.dataset.uploadProductImage}"]`)?.click();
+        });
+      });
+      $("products").querySelectorAll("[data-product-file]").forEach((input) => {
+        input.addEventListener("change", () => uploadProductImage(input));
+      });
+    }
+
+    function renderAssetUrls(urls) {
+      const assets = Array.isArray(urls) ? urls.filter(Boolean) : [];
+      $("assetUrls").innerHTML = assets.length
+        ? assets.map((url, index) => `
+          <div class="asset-row">
+            <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(fileNameFromUrl(url) || `Файл ${index + 1}`)}</a>
+            <button class="mini-button" data-copy-asset="${index}" type="button">Копирай</button>
+            <button class="mini-button" data-remove-asset="${index}" type="button">Премахни</button>
+          </div>
+        `).join("")
+        : `<div class="empty show">Няма качени файлове към тази кампания.</div>`;
+
+      $("assetUrls").querySelectorAll("[data-copy-asset]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const asset = collectAssetUrlsFromEditor()[Number(button.dataset.copyAsset)];
+          if (!asset) return;
+          await navigator.clipboard.writeText(asset);
+          showToast("Линкът към файла е копиран.");
+        });
+      });
+
+      $("assetUrls").querySelectorAll("[data-remove-asset]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const current = collectAssetUrlsFromEditor();
+          current.splice(Number(button.dataset.removeAsset), 1);
+          renderAssetUrls(current);
+        });
+      });
+    }
+
+    function collectAssetUrlsFromEditor() {
+      return [...$("assetUrls").querySelectorAll("a")]
+        .map((link) => link.href)
+        .filter(Boolean);
+    }
+
+    function fileNameFromUrl(url) {
+      try {
+        return decodeURIComponent(new URL(url).pathname.split("/").filter(Boolean).pop() || "");
+      } catch {
+        return url;
+      }
+    }
+
+    function safeFileName(name = "file") {
+      const fallback = `file-${Date.now()}`;
+      return String(name || fallback)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 90) || fallback;
+    }
+
+    async function uploadToStorage(file, folder) {
+      if (!file) return "";
+      const client = supabaseClient();
+      if (!client) {
+        settingsModal.classList.add("open");
+        showToast("Нужни са Supabase настройки за качване.");
+        return "";
+      }
+
+      const path = `${currentProfile}/${folder}/${Date.now()}-${createId()}-${safeFileName(file.name)}`;
+      const { error } = await client.storage
+        .from(STORAGE_BUCKET_NAME)
+        .upload(path, file, {
+          contentType: file.type || "application/octet-stream",
+          upsert: false
+        });
+
+      if (error) {
+        showToast(`Storage грешка: ${error.message}`);
+        return "";
+      }
+
+      const { data } = client.storage.from(STORAGE_BUCKET_NAME).getPublicUrl(path);
+      return data?.publicUrl || "";
+    }
+
+    async function uploadCategoryImage() {
+      const input = $("categoryImageUpload");
+      const file = input.files?.[0];
+      if (!file) return;
+      showToast("Качвам снимка на категория...");
+      const url = await uploadToStorage(file, "categories");
+      input.value = "";
+      if (!url) return;
+      $("categoryImageUrl").value = url;
+      showToast("Снимката на категория е качена.");
+    }
+
+    async function uploadProductImage(input) {
+      const file = input.files?.[0];
+      const index = input.dataset.productFile;
+      if (!file || index === undefined) return;
+      showToast("Качвам продуктова снимка...");
+      const url = await uploadToStorage(file, "products");
+      input.value = "";
+      if (!url) return;
+      const imageInput = document.querySelector(`[data-product-image-url="${index}"]`);
+      if (!imageInput) return;
+      imageInput.value = url;
+      imageInput.dispatchEvent(new Event("input", { bubbles: true }));
+      showToast("Продуктовата снимка е качена.");
+    }
+
+    async function uploadAssetFiles() {
+      const input = $("assetUpload");
+      const files = [...(input.files || [])];
+      if (!files.length) return;
+      showToast(`Качвам ${files.length} файл(а)...`);
+      const current = collectAssetUrlsFromEditor();
+      const uploaded = [];
+      for (const file of files) {
+        const url = await uploadToStorage(file, "campaign-files");
+        if (url) uploaded.push(url);
+      }
+      input.value = "";
+      renderAssetUrls([...current, ...uploaded]);
+      if (uploaded.length) showToast(`Качени са ${uploaded.length} файл(а).`);
     }
 
     function renderAdTexts(texts) {
@@ -2479,6 +2669,7 @@
 
     function collectForm() {
       const products = collectProductsFromEditor();
+      const assetUrls = collectAssetUrlsFromEditor();
 
       const offerTexts = [...document.querySelectorAll("[data-offer-text]")]
         .map((input) => input.value.trim())
@@ -2504,6 +2695,7 @@
         cta: $("cta").value.trim(),
         categoryImageUrl: $("categoryImageUrl").value.trim(),
         galleryUrl: $("galleryUrl").value.trim(),
+        assetUrls,
         backgroundColor: $("backgroundColor").value || "#3157d5",
         products,
         adTexts,
@@ -2657,6 +2849,7 @@
         cta: item.cta,
         category_image_url: item.categoryImageUrl,
         gallery_url: item.galleryUrl || "",
+        asset_urls: item.assetUrls || [],
         background_color: item.backgroundColor || "#3157d5",
         products: item.products || [],
         ad_texts: item.adTexts || [],
@@ -2684,6 +2877,7 @@
         cta: row.cta,
         categoryImageUrl: row.category_image_url,
         galleryUrl: row.gallery_url,
+        assetUrls: row.asset_urls || [],
         backgroundColor: row.background_color,
         products: row.products || [],
         adTexts: row.ad_texts || [],
@@ -2956,6 +3150,10 @@
       $("deleteBtn").addEventListener("click", deleteCurrent);
       $("duplicateBtn").addEventListener("click", duplicateCurrent);
       $("addProductBtn").addEventListener("click", addProductRow);
+      $("uploadCategoryImageBtn").addEventListener("click", () => $("categoryImageUpload").click());
+      $("categoryImageUpload").addEventListener("change", uploadCategoryImage);
+      $("uploadAssetsBtn").addEventListener("click", () => $("assetUpload").click());
+      $("assetUpload").addEventListener("change", uploadAssetFiles);
       $("isEvergreenPeriod").addEventListener("change", () => {
         updatePeriodFieldState();
       });
